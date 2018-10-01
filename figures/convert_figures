@@ -1,0 +1,25 @@
+#!/bin/sh
+
+
+diafiles=$(ls -w1 ../figures/dia/)
+echo ">> Starting the convertion of DIA files to EPS."
+for file in $diafiles ; do
+     file_eps=$(echo $file | sed 's/.dia/.eps/g')
+     dia -t eps -e ../figures/eps/$file_eps ../figures/dia/$file 2>> /dev/null
+done
+echo ">> Finished the convertion of DIA files to EPS."
+
+graphfiles=$(ls -w1 ../figures/dot/)
+echo ">> Starting the convertion of dot files to EPS."
+for file in $graphfiles ; do
+     file_eps=$(echo $file | sed 's/.dot/.eps/g')
+     dot -Teps -o ../figures/eps/$file_eps ../figures/dot/$file
+done
+echo ">> Finished the convertion of dot files to EPS."
+
+epsfiles=$(ls -w1 ../figures/eps/)
+echo ">> Starting the convertion of EPS files to PDF."
+for file in $epsfiles ; do
+    epstopdf ../figures/eps/$file --outfile=$(echo ../figures/pdf/$file | sed -e 's/\.eps/.pdf/g')
+done
+echo ">> Finished the convertion of EPS files to PDF."

@@ -1,0 +1,23 @@
+
+
+%   \section{Security Analysis} \label{sec:security}
+   \begin{figure*}[!htb]
+	  \centering
+	  \includegraphics[scale=0.2]{sec_engine_tetec}
+	  \caption{The prototype architecture.}
+  %	\vspace*{-9pt} 
+	  \label{fig:protcshia}
+  \end{figure*}
+
+   The prototype will be implemented upon a Leon 3 SPARC V8 platform from Aeroflex Gaisler~\cite{Leon} on an Altera DE2-115 Development Kit. To implement \cshia's pre design (Figure \ref{fig:system}), the design of two blocks are planned: the Security Engine (\tagsystem) and the Security Cache (\seccache) , to be inserted between the processor and the memory controller as shown in Figure \ref{fig:protcshia}. The \seccache~ will control bus transactions between the processor and the \mctrl, and provide data to the \tagsystem. Consequently, the \tagsystem~ will control the fuzzy extractor and the \ptaggen. To use  \cshia's fuzzy extractor a (127, 64, 10)-\bch~code instance for error correction and  an internal memory that emulates a \spuf will be used. The \ptaggen~ will use a \siphash-2-4 for \ptag~generation and verification.
+
+
+
+  \subsection{Prototype Configuration}
+  \label{subsec:cshia-configuration}
+
+  
+  Since the processor may ask for an arbitrary number of words from memory, and the architecture needs to check for the integrity of a full memory block in every cache miss, a buffer in \seccache will be used to hold isolated memory words required by the processor. When the processor demands a memory word, the buffer controller will request all the other words from the main memory to fit one \ptag block. That will allow \cshia~to authenticate entire memory blocks and,with the proper memory size, can also speedup sequential requests of the processor. The buffer will be configurable to fit a variable \ptag~block. 
+  %for this work it is implemented in two separate blocks, one for reads and another one for writes, with only 256 bytes each. Because the current \cshia~prototype was planned as a preliminary platform for security evaluation, there are many auxiliary components and additional memories not present in the original Leon 3 platform. 
+ 
+ 

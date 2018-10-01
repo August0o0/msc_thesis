@@ -1,0 +1,152 @@
+% Escolha: Portugues ou Ingles ou Espanhol.
+% Para a versão final do texto, após a defesa acrescente Final:
+
+
+\documentclass[Ingles,Final]{ic-tese-v3}
+% \documentclass[Portugues,Final]{ic-tese-v3}
+
+\usepackage[latin1,utf8]{inputenc}
+
+% \usepackage{pdflscape}
+\usepackage{rotating}
+\usepackage{tikz}
+
+
+% Para acrescentar comentários ao PDF descomente:
+\usepackage
+ [pdfauthor={Augusto F. R. Queiroz},
+  pdftitle={Secure code execution using PUF authentication},
+  pdfkeywords={PUF}]%,
+%   pdfproducer={Latex with hyperref},
+%   pdfcreator={pdflatex}]
+{hyperref}
+
+
+% *** GRAPHICS RELATED PACKAGES ***w
+
+\usepackage{graphicx,url, float}
+%    \ifCLASSINFOpdf
+%        \usepackage[pdftex]{graphicx,url}
+        \graphicspath{{figures/pdf/}}
+        \DeclareGraphicsExtensions{.pdf}
+%    \else
+%        \usepackage[dvips]{graphicx,url}
+%        \graphicspath{{figures_eps/}}
+%        \DeclareGraphicsExtensions{.eps}
+%    \fi
+
+% *** MATH PACKAGES ***
+\usepackage{amssymb}  
+
+% *** ALGORITHM PACKAGES ***
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% *** CITATION PACKAGE ***
+\usepackage{cite}
+
+% *** MISC UTILITY PACKAGES ***
+% \usepackage{ulem}
+\usepackage{multirow}
+\usepackage[printonlyused]{acronym}
+
+% *** COMMANDS ***
+\newcommand{\cald}{{\cal D}}
+\newcommand{\calh}{{\cal H}}
+\newcommand{\calj}{{\cal J}}
+\newcommand{\calm}{{\cal M}}
+\newcommand{\caln}{{\cal N}}
+\newcommand{\cals}{{\cal S}}
+\newcommand{\calt}{{\cal T}}
+\newcommand{\calv}{{\cal V}}
+
+\begin{document}
+
+% Escolha entre autor ou autora:
+\autor{Augusto Fernandes Ribas Queiroz }
+
+
+% Sempre deve haver um título em português:
+\titulo{Execução segura de códigos utilizando PUF para autenticação}
+
+% Se a língua for o inglês ou o espanhol defina:
+\title{Secure code execution using PUF authentication}
+
+% Escolha entre orientador ou orientadora. Inclua os títulos acadêmicos:
+\orientador{Prof. Dr.Guido Costa Souza de Araújo}
+%\orientadora{Profa. Dra. Nome da Orientadora}
+
+% Escolha entre coorientador ou coorientadora, se houver.  Inclua os títulos acadêmicos:
+\coorientador{Prof. Dr.Mário Lúcio Côrtes}
+
+
+% Escolha entre mestrado ou doutorado:
+\mestrado
+%\doutorado
+
+% Se houve cotutela, defina:
+%\cotutela{Universidade Nova de Plutão}
+
+\datadadefesa{22}{03}{2019}
+
+% Para a versão final defina:
+\avaliadorA{Prof. Dr. someone}{Universidade Estadual de Campinas}
+\avaliadorB{Prof. Dr.Someonel}{Universidade Federal de Santa Catarina}
+\avaliadorC{Profa. Dra. someone}{Universidade Estadual de Campinas}
+
+
+% Para incluir a ficha catalográfica em PDF na versão final, descomente e ajuste:
+%\fichacatalografica{includes/Ficha-Catalografica-Protocolo-325698704.pdf}
+
+
+\include{includes/preface}
+
+% O corpo da dissertação ou tese começa aqui:
+%\include{chapters/introduction}
+\chapter{Introduction}
+\label{chap:introduction}
+	\section{Contributions}
+	\label{sec:contributions}
+	\section{Publications}
+	\label{sec:publications}
+	\section{Organization of the dissertation}
+	\label{sec:organization_of_dissertation}
+
+\chapter{Related Work}
+\label{chap:related_work}
+
+\chapter{Fundamental concepts}
+\label{chap:fundamental_concepts}  
+
+\section{concept1}
+\label{sec:concept1}
+
+\chapter{CSHIA  Architecture}
+\label{chap:cshia_architecture}
+
+\chapter{CSHIA  Prototype}
+\label{caho:cshia_prototype}
+
+
+\chapter{CSHIA  Evaluation}
+\label{chap:cshia:evaluation}
+
+\chapter{Conclusion and Future Work}
+\label{chap:conclusion}
+    \section{Conclusion}
+    \label{sec:conclusion}
+\section{Future Work}
+    \label{sec:future_work}
+
+% As referências:
+\bibliographystyle{plain}
+\bibliography{aqueiroz_msc_dissertation}
+
+
+% Os anexos, se houver, vêm depois das referências:
+%\appendix
+%\include{apendices/illustrative_example}
+%     \include{thesis_apendices/gridappgen}
+
+
+\end{document}
