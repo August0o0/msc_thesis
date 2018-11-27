@@ -1,4 +1,5 @@
-
+\chapter{Introduction}
+\label{chap:introduction}
 
 Standard design techniques to secure code execution in \socs~are based on well-known cryptographic mechanisms and on (micro) architecture features to encode bus transactions~\cite{Elbaz2005}, or isolate secure code into trusted platforms~\cite{tpm_spec}, among others. Although such techniques usually provide good levels of security, most of them are either inefficient, considerably impact processor (micro) architecture design, require extensive changes in the programming tool-chain~\cite{Suh2003a}, or are so complex \cite{Suh2005} that may create unexpected security loopholes. Any solution up to this challenge should be able to use more than incremental approaches which try to re-use current cryptographic mechanisms to fill in security holes; the new generation of \iot~\soc~devices will require novel solutions which deeply integrate hardware-intrinsic security features to program execution, across the whole architecture and software stacks.
 
@@ -6,4 +7,22 @@ Standard design techniques to secure code execution in \socs~are based on well-k
 
 Although silicon \pufs~have gained a lot of attention, they are still under strong scrutiny, as they can undergo a number of attacks like: (1) reverse engineering \cite{Nedospasov2013}, (2) characterization of the physical parameters \cite{Tajik2014}, (3) modeling \cite{Becker2015}, and (4) emulation \cite{Helfmeier2013}. Even though there are still many concerns about the overall security of \pufs, their simplicity, low-power consumption and speed are very attractive design features for some application domains~\cite{1502786} (e.g. \iot~devices). One of the potential applications of \pufs~in \iot~devices would enable integrity checking and authentication of program code and data. Yet very few works have addressed that using \pufs\cite{Suh2005}. Thus additional research needs to be done in order not only to improve \puf~security, but also to allow its integration into processor architecture and software stacks.
 
-Recently, \textit{Computer Security by Hardware-Intrinsic Authentication} (\system) was presented in~\cite{Hoffman2015}. \system~proposes a new secure program execution model which employs a new \puf-based authentication mechanism aimed at ensuring code and data authenticity for a given program\slash{}processor pair. Specifically, the system generates an authentication tag (called \ptag) to every instruction and data cache line at the very first moment that it runs in the processor. This authentication tag is later verified for integrity, ensuring that program instructions and data are not violated in runtime, and thus programs will execute correctly during the lifetime of the device. This work  intents to extend the preliminary contributions in \cite{Hoffman2015}. In particular, design a \cshia~\fpga~prototype in conjunction with a security analysis and further evaluate its impact on performance and robustness . 
+Recently, \textit{Computer Security by Hardware-Intrinsic Authentication} (\system) was presented in~\cite{Hoffman2015}. \system~proposes a new secure program execution model which employs a new \puf-based authentication mechanism aimed at ensuring code and data authenticity for a given program\slash{}processor pair. Specifically, the system generates an authentication tag (called \ptag) to every instruction and data cache line at the very first moment that it runs in the processor. This authentication tag is later verified for integrity, ensuring that program instructions and data are not violated in runtime, and thus programs will execute correctly during the lifetime of the device. This work  intents to extend the preliminary contributions in \cite{Hoffman2015}. In particular, design a \cshia~\fpga~prototype in conjunction with a security analysis and further evaluate its impact on performance and robustness .
+
+\section{Contributions}
+\label{sec:contributions}
+\lorenipsuns
+
+\section{Publications}
+\label{sec:publications}
+The contribuitions of this work were published  in the following conferences 
+\begin{itemize}
+\item{Pub0} Publication 1  - description 1
+\item{Pub1} Publication 2 - description 2
+\end{itemize}
+
+\section{Organization of the dissertation}
+\label{sec:organization_of_dissertation}
+\lorenipsuns
+ 
+

@@ -10,7 +10,7 @@
 % \usepackage{pdflscape}
 \usepackage{rotating}
 \usepackage{tikz}
-
+\usepackage{xcolor}
 
 % Para acrescentar comentários ao PDF descomente:
 \usepackage
@@ -87,7 +87,7 @@
 % Se houve cotutela, defina:
 %\cotutela{Universidade Nova de Plutão}
 
-\datadadefesa{22}{03}{2019}
+\datadadefesa{28}{03}{2019}
 
 % Para a versão final defina:
 \avaliadorA{Prof. Dr. someone}{Universidade Estadual de Campinas}
@@ -97,39 +97,33 @@
 
 % Para incluir a ficha catalográfica em PDF na versão final, descomente e ajuste:
 %\fichacatalografica{includes/Ficha-Catalografica-Protocolo-325698704.pdf}
-
+\include {includes/acronymus}
 
 \include{includes/preface}
 
 % O corpo da dissertação ou tese começa aqui:
-%\include{chapters/introduction}
-\chapter{Introduction}
-\label{chap:introduction}
-	\section{Contributions}
-	\label{sec:contributions}
-	\section{Publications}
-	\label{sec:publications}
-	\section{Organization of the dissertation}
-	\label{sec:organization_of_dissertation}
+\include{chapters/intro}
+
 
 \chapter{Related Work}
 \label{chap:related_work}
+\include{chapters/related}
 
 \chapter{Fundamental concepts}
 \label{chap:fundamental_concepts}  
-
-\section{concept1}
-\label{sec:concept1}
+\include{chapters/concepts}
 
 \chapter{CSHIA  Architecture}
 \label{chap:cshia_architecture}
+\include{chapters/architecture}
 
 \chapter{CSHIA  Prototype}
 \label{caho:cshia_prototype}
-
+\include{chapters/prototype}
 
 \chapter{CSHIA  Evaluation}
 \label{chap:cshia:evaluation}
+\include{chapters/evaluation}
 
 \chapter{Conclusion and Future Work}
 \label{chap:conclusion}
