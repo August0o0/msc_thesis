@@ -1,0 +1,143 @@
+
+
+
+% Definitions
+\def\socs{SoCs}
+\def\prf{PRF}
+\def\prfs{PRFs}
+\def\sram{SRAM}
+\def\srams{SRAMs}
+\def\spuf{SPUF}
+\def\spufs{SPUFs}
+\def\tagsystem{SEC-ENG}
+\def\mctrl{MCTRL}
+\def\system{CSHIA}
+\def\seccache{SEC-CACHE}
+\def\thetitle{Secure code execution using PUF authentication}
+
+
+
+% Definitions
+\def\phd{Ph.D.}
+\def\iot{IoT}
+\def\iots{IoTs}
+\def\soc{SoC}
+\def\cpu{CPU}
+\def\socs{SoCs}
+\def\asic{ASIC}
+\def\asics{ASICs}
+\def\puf{PUF}
+\def\pufs{PUFs}
+\def\prp{PRP}
+\def\prps{PRPs}
+\def\prf{PRF}
+\def\prfs{PRFs}
+\def\sram{SRAM}
+\def\srams{SRAMs}
+\def\spuf{SPUF}
+\def\spufs{SPUFs}
+\def\seceng{SEC-ENG}
+\def\mctrl{MCTRL}
+\def\pmmu{PMMU}
+\def\handler{BUS-HDLR}
+\def\cshia{CSHIA}
+\def\fuzzy{Fuzzy Extractor}
+\def\fe{FE}
+\def\fes{FEs}
+\def\ptag{PTAG}
+\def\ptags{PTAGs}
+\def\pufarch{PUF Architecture}
+\def\pufarchs{PUF Architectures}
+\def\puf{PUF}
+\def\apuf{APUF}
+\def\pufs{PUFs}
+\def\apufs{APUFs}
+%\def\icache{ICL}
+%\def\icaches{ICLs}
+%\def\dcache{DCL}
+%\def\dcaches{DCLs}
+\def\icache{LIC}
+\def\icaches{LICs}
+\def\dcache{LDC}
+\def\dcaches{LDCs}
+\def\ptaggen{PTAG-GEN}
+\def\ptagnmi{PTAG-NMI}
+\def\ptagmem{PTAG Memory}
+\def\ptagcache{PTAG Cache}
+\def\fpga{FPGA}
+\def\fpgas{FPGAs}
+\def\vhdl{VHDL}
+\def\siphash{SipHash}
+\def\nopolicy{Caching.Path}
+\def\chtree{CHTree}
+\def\readhit{Read.Hit}
+\def\secbus{SecBus}
+\def\etal{\textit{et al.}}
+\def\mt{Merkle Tree}
+\def\voting{TMV}
+\def\bch{BCH}
+\def\ibs{IBS}
+\def\ecc{ECC}
+\def\isa{ISA}
+\def\aes{AES}
+\def\lru{LRU}
+\def\alap{ALAP}
+\def\leon{Leon3}
+\def\amba{AMBA}
+\def\dsu{DSU}
+\def\grmon{GRMON}
+\def\cacti{CACTI}
+\def\epe{EPE}
+\def\baseline{\textit{Leon3 Baseline}}
+\def\timestamp{\textit{\cshia-TS}}
+\def\cshiamt{\textit{\cshia-MT}}
+\def\attacker{he\slash{}she}
+\def\Attacker{he\slash{}she}
+\def\hisher{his\slash{}her}
+\def\Hisher{His\slash{}her}
+\def\crp{CRP}
+\def\crps{CRPs}
+\def\andor{and\slash{}or}
+\def\xom{XOM}
+\def\aegis{AEGIS}
+\def\fedtic{FEDTIC}
+\def\lone{L1}
+\def\ltwo{L2}
+\def\lut{LUT}
+\def\luts{LUTs}
+\def\otp{OTP}
+\def\crc{CRC}
+\def\io{I\slash{}O}
+\def\ios{I\slash{}Os}
+
+\def\lorenipsunb{\textcolor{blue}{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae iaculis erat. Aliquam tristique consectetur ante, quis commodo lacus egestas in. Nullam semper elit nec eros pretium dapibus. Ut eget porta metus. Mauris rhoncus vel magna non faucibus. Ut a ornare elit. Morbi sagittis quam nec risus laoreet, tincidunt volutpat ex venenatis. Sed ultrices felis quis felis scelerisque gravida a non neque. Etiam sed nisi neque. Ut lobortis pulvinar facilisis. Vestibulum quis enim bibendum, iaculis nulla non, consequat nunc. Suspendisse sed hendrerit tortor, non maximus lorem. Ut sit amet turpis eget libero condimentum scelerisque. Quisque sed dolor metus.
+
+Cras ac tincidunt tellus. Morbi id interdum magna, a ornare justo. Praesent tincidunt tempus porta. Sed iaculis fermentum nibh non porta. Aenean mattis sapien purus, ut ornare risus ornare non. Integer sit amet neque auctor, interdum mi in, sodales sem. Pellentesque at rutrum quam, eget posuere elit. Donec nec tortor egestas, laoreet ligula sit amet, luctus felis. Proin sit amet tempor odio. Sed orci orci, gravida dignissim molestie id, fringilla nec ligula.}}
+
+\def\lorenipsuns{\textcolor{blue}{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae iaculis erat. Aliquam tristique consectetur ante, quis commodo lacus egestas in. Nullam semper elit nec eros pretium dapibus. Ut eget porta metus. Mauris rhoncus vel magna non faucibus. Ut a ornare elit. Morbi sagittis quam nec risus laoreet, tincidunt volutpat ex venenatis. Sed ultrices felis quis felis scelerisque gravida a non neque. Etiam sed nisi neque. Ut lobortis pulvinar facilisis.}}
+
+% To turn comments OFF simply comment out the \Commentstrue line
+\newif\ifComments
+%\Commentstrue
+
+\ifComments
+\newcommand{\chek}[1]{\textcolor{red}{Check: {#1}}}
+\newcommand{\caio}[1]{\textcolor{violet}{Caio: {#1}}}
+\newcommand{\diego}[1]{\textcolor{green}{Diego: {#1}}}
+\newcommand{\guido}[1]{\textcolor{magenta}{Guido: {#1}}}
+\newcommand{\mario}[1]{\textcolor{olive}{Mario: {#1}}}
+\newcommand{\rem}[1]{\textcolor{gray}{\sout{#1}}}
+\newcommand{\new}[1]{\textcolor{blue}{ {#1}}}
+\newcommand{\ed}[1]{\textcolor{red}{ {#1}}}
+\newcommand{\short}[1]{\textcolor{blue}{ {#1}}}
+\else
+\newcommand{\chek}[1]{}
+\newcommand{\caio}[1]{}
+\newcommand{\diego}[1]{}
+\newcommand{\guido}[1]{}
+\newcommand{\mario}[1]{}
+\newcommand{\rem}[1]{}
+\newcommand{\new}[1]{#1}
+\newcommand{\ed}[1]{#1}
+\newcommand{\short}[1]{}
+\fi

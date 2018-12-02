@@ -7,6 +7,22 @@
 
 \usepackage[latin1,utf8]{inputenc}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 % \usepackage{pdflscape}
 \usepackage{rotating}
 \usepackage{tikz}
@@ -102,16 +118,18 @@
 \include{includes/preface}
 
 % O corpo da dissertação ou tese começa aqui:
+\chapter{Introduction}
+\label{chap:introduction}
 \include{chapters/intro}
 
+\chapter{Fundamental concepts}
+\label{chap:fundamental_concepts}  
+\include{chapters/concepts}
 
 \chapter{Related Work}
 \label{chap:related_work}
 \include{chapters/related}
 
-\chapter{Fundamental concepts}
-\label{chap:fundamental_concepts}  
-\include{chapters/concepts}
 
 \chapter{CSHIA  Architecture}
 \label{chap:cshia_architecture}
@@ -135,6 +153,7 @@
 % As referências:
 \bibliographystyle{plain}
 \bibliography{aqueiroz_msc_dissertation}
+
 
 
 % Os anexos, se houver, vêm depois das referências:
