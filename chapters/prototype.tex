@@ -1,23 +1,77 @@
 
 
-%   \section{Security Analysis} \label{sec:security}
-   \begin{figure*}[!htb]
-	  \centering
-	  \includegraphics[scale=0.2]{sec_engine_tetec}
-	  \caption{The prototype architecture.}
-  %	\vspace*{-9pt} 
-	  \label{fig:protcshia}
-  \end{figure*}
-
-   The prototype will be implemented upon a Leon 3 SPARC V8 platform from Aeroflex Gaisler~\cite{Leon} on an Altera DE2-115 Development Kit. To implement \cshia's pre design (Figure \ref{fig:system}), the design of two blocks are planned: the Security Engine (\tagsystem) and the Security Cache (\seccache) , to be inserted between the processor and the memory controller as shown in Figure \ref{fig:protcshia}. The \seccache~ will control bus transactions between the processor and the \mctrl, and provide data to the \tagsystem. Consequently, the \tagsystem~ will control the fuzzy extractor and the \ptaggen. To use  \cshia's fuzzy extractor a (127, 64, 10)-\bch~code instance for error correction and  an internal memory that emulates a \spuf will be used. The \ptaggen~ will use a \siphash-2-4 for \ptag~generation and verification.
+\section{Hardware setup}
+\label{sec:hardware_setup}
 
 
+We chose the \leon~platform from Cobham Gaisler~\cite{Leon} to implement \cshia. \leon~is a \vhdl~implementation of a SPARC V8 processor with configurable parameters, which together with some additional IP cores provide a suitable solution for embedded systems. In addition, \leon~has a free version for academic purposes that include sophisticated debugging tools, and it is available for a variety of \fpga~Development kits. Gaisler keeps an email list for support and constant updates are provided. All these features are interesting because \cshia~can be an extension of the platform available to the research community, and which also has solid design choices since \leon~is a product available to the industry.
 
-  \subsection{Prototype Configuration}
-  \label{subsec:cshia-configuration}
+The implementation is based on Figure \ref{fig:cshia} in Section \ref{sec:CSHIA}. \leon's processor (the core) is connected through the main memory by a \amba~Bus version 2.0. In our modification, the processor's \io~master bus connects it to \handler, which then provides a new \io~master bus for the rest of the components in the platform. Thus, \handler~is transparent to all components of the platform, even the core. One of the components that is specific of \leon's platform is the Debug Support Unit (\dsu), which allows a designer using a debug host (such as a computer) to connect to development kits running \leon. Through the debugging connection, a program can be loaded to the \fpga~memory, started, paused, among other useful functions.
 
-  
-  Since the processor may ask for an arbitrary number of words from memory, and the architecture needs to check for the integrity of a full memory block in every cache miss, a buffer in \seccache will be used to hold isolated memory words required by the processor. When the processor demands a memory word, the buffer controller will request all the other words from the main memory to fit one \ptag block. That will allow \cshia~to authenticate entire memory blocks and,with the proper memory size, can also speedup sequential requests of the processor. The buffer will be configurable to fit a variable \ptag~block. 
-  %for this work it is implemented in two separate blocks, one for reads and another one for writes, with only 256 bytes each. Because the current \cshia~prototype was planned as a preliminary platform for security evaluation, there are many auxiliary components and additional memories not present in the original Leon 3 platform. 
- 
- 
+We implemented \cshia~in an Altera \fpga~Development Kit DE2-115. The parameters of the processor and \cshia~are in Table \ref{tab:config}. The Altera's kit allows the processor to run at 50 MHz. The total amount of SDRAM memory dedicated to \leon~is 128 MB. As convention all programs starts by its \texttt{.text} segment (code) at the address \texttt{0x40000000}. We set \texttt{.data} segment (data) to start at \texttt{0x40013000}, or at \texttt{0x40023000}, depending on the size of the code segment. As described in the previous section, \handler~has a buffer that stores memory words. When these words form a memory block, it is handed to \seceng. We set the size of this buffer to 4 cache lines, which gives a total of 128 bytes. The 128-bit \siphash's key is extracted from 64 Arbiter \pufs~(\apufs). Although any \puf~could be used, due to the simplicity of design we chose the \apuf~as a proof of concept. Each \apuf~has a 64-bit challenge input. \ptag~generation lasts 10 cycles, between \seceng~request and \ptaggen~reply.
+
+\begin{table}[!t]
+  \center
+  \caption{\cshia~\fpga~implementation configuration.} 
+  \label{tab:config}
+  \footnotesize
+  \begin{tabular}{|l|l|}
+%\    \noalign{\hrule height 1pt}
+%\    \rowcolor{lightgray}
+    \hline
+      Component & Parameter\\ 
+    %\noalign{\hrule height 0.75pt}
+    \hline
+    \hline
+      \leon~Processor & \\
+      \hspace{0.25in} Frequency & 50 MHz\\
+      \hspace{0.25in} Instruction Cache & 16 KB\\
+      \hspace{0.25in} Data Cache & 16 KB\\
+      \hspace{0.25in} Cache Line Size & 256 bits\\
+      \hspace{0.25in} Memory Word & 32 bits\\
+    \hline
+      Code and Data Memory & Up to 128 MB\\
+      \hspace{0.25in} Code Start Address & \texttt{0x40000000}\\
+      \hspace{0.25in} Data Start Address 1 & \texttt{0x40013000}\\
+      \hspace{0.25in} Data Start Address 2 & \texttt{0x40023000}\\
+    \hline
+      \handler~Buffer & 128 Bytes\\
+    \hline
+      \fuzzy & \\
+      \hspace{0.25in} \ecc & (127,64,10)-\bch\\
+      \hspace{0.25in} \pufs & 64 $\times$ 64-bit Arbiter \pufs\\
+    \hline
+      \ptaggen & \\
+      \hspace{0.25in} \prf & \siphash-2-4\\
+      \hspace{0.25in} \siphash-2-4 key & 128 bits\\
+      \hspace{0.25in} \ptag~generation & 10 cycles\\
+      \hspace{0.25in} \ptag~length & 64 bits\\
+    \hline
+      \ptag~Memory & 216,064 bytes\\
+      \hspace{0.25in} Code and Data \ptags & 18816 words of 64 bits\\ 
+      \hspace{0.25in} \mt~\ptags & 8192 words of 64 bits\\ 
+      \hspace{0.25in} Data coverage & 512 KB\\
+      \hspace{0.25in} Total coverage & 588 KB\\
+    \hline
+      \pmmu & \\
+      \hspace{0.25in} Time Stamp Memory & $2^{14}$ timestamps\\
+      \hspace{0.25in} Time Stamp Length & 16 bits\\
+      \hspace{0.25in} \ptag~Cache & 4 KB \\
+      \hspace{0.25in} \pmmu~Buffer for \mt & 2 * number of cache lines\\
+    \hline
+  \end{tabular}
+%\vspace*{-12pt}
+\end{table}
+
+Continuing to look at Table \ref{tab:config}, the \ptagmem~uses internal memory of the \fpga. This option arose due to limiting options available in the kit. Because we wanted to design a 64-bit bus memory, no better option than internal memory was available. The \sram~of the kit only allowed 16-bit words. We also could not increase the frequency of the \sram~using PLLs since its maximum frequency was limited to 125 MHz, and, to simulate a 64-bit bandwidth, we would need at least a \sram~operating at 200 MHz. The option for \fpga~internal memory limited our coverage to a maximum of 512 KB of data memory, which resulted in a memory overhead of 36 \% (code, data, and \mt). In addition, to reduce unused memory words in \ptagmem, we split it into two. This allowed to create an easy decoder to separate \ptags~of memory blocks from those of chunks of \ptags. 
+
+Due to the high utilization of internal memory, timestamp memory became limited to $2^{14}$ 16-bit words to cover the 512 KB of data memory. This represents 5.4\% of the total 588 KB main memory coverage. The \ptagmem~utilization for this solution was up to 147 KB (code and data), or 25\% overhead. Table \ref{tab:config} also shows the \ptag~cache's configuration. Since this cache is an internal memory as well, it was limited to 4 KB. That limitation did not prevent us of evaluating the cache in multiple configurations. We evaluated this cache in different configurations of lines, set associativity, and replacement policies. Finally, as previously discussed, \pmmu~requires a buffer to stall a \ptag~cache write or read while an eviction is required. We calculated that this buffer needs to be at most 2 times the number of lines in \ptagcache. 
+
+One last information about our \fpga~\cshia~implementation is that it had three modes of operation. In the first mode, called \baseline, the \handler~is disabled and all security-specific hardware is bypassed. A second mode, the \timestamp, activates \pmmu~for timestamps only. Finally, the third mode, \textit{\cshia-MT}, disables timestamps and activates the cache in \pmmu~for supporting the Merkle Tree implementation. Being able to switch between those modes only using switch keys of the development key helped us in debugging and evaluating the performance of the architecture.
+
+
+\section{GAISLER Tools}
+\label{sec:gaisler_tools}
+\lorenipsuns
+
+
