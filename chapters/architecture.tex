@@ -57,16 +57,12 @@
 \section{Components of the Architecture}
 \label{sec:Components-of-the-Architecture}
 
-As Section \ref{sec:Security-Issues-in-Embedded-Systems} discussed, the main resource to provide integrity are tags. Since \cshia~uses \puf-based keys to generate tags, we called them \puf-Tags, or \ptags~for short. \ptags~are the core of \cshia's design. They will be unique for each instance of \cshia~due to the unclonability property of \pufs. That ensures one-to-one relatioship between programs and instances, providing authenticity. To handle \ptags, three main components are added to a conventional embedded system architecture. They are: The \ptag~Memory; the Bus Handler (\handler); and the Security Engine (\seceng). Figure \ref{fig:cshia} shows this design and how components communicate between themselves. 
+As Section \ref{subsec:Integrity} discussed, the main resource to provide integrity are tags. Since \cshia~uses \puf-based keys to generate tags, we called them \puf-Tags, or \ptags~for short. \ptags~are the core of \cshia's design. They will be unique for each instance of \cshia~due to the unclonability property of \pufs. That ensures one-to-one relatioship between programs and instances, providing authenticity. To handle \ptags, three main components are added to a conventional embedded system architecture. They are: The \ptag~Memory; the Bus Handler (\handler); and the Security Engine (\seceng). Figure \ref{fig:cshia} shows this design and how components communicate between themselves. 
 
 \ptag~Memory is an external memory and has its own buses. This architectural decision gives freedom to designers that can choose bus width, frequency, address space, etc. Because the processor is not aware of any additional component of \cshia, \handler~intercepts data transfers between processor and memory in order to provide them to \seceng~that generates tags. \handler~can also request data in behalf of the processor to main memory to form complete memory blocks that are necessary to generate \ptags.
 
 \seceng~has three major subcomponents. The main one is the \ptag~Generator (\ptaggen), which uses input data whose length is equal to a memory block concatenated with its address to generate \ptags. The \fuzzy~is only used when the system loses its secret key. For instance, after a power cycle. Thus, when the system is powered on, the \fuzzy~will extract the \puf-based key and provide it to \ptaggen. Finally, we have the \ptag~Memory Management Unit (\pmmu). The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~and also decode internal addresses of \ptags~to physical addresses of \ptagmem. In addition to that, \pmmu~can have two distinct designs. If a designer chooses to use timestamps as solution for replay attacks, \pmmu~will have an internal memory to store and control timestamps of the memory blocks. However, if the solution for replay attacks is a \mt, \pmmu~will control verification and update of the tree, as well as it will have a cache memory, the \ptagcache, to speed up these tasks.
 
-\def\fenroll{Figure \ref{fig:fuzzy-extractor} \subref{fig:fuzzy-enroll}}
-\def\fregen{Figure \ref{fig:fuzzy-extractor} \subref{fig:fuzzy-regen}}
-
-Here is how \cshia's components work together. \handler~checks for memory read-write operations of the processor. When it perceives a memory read it will capture memory words \andor~request memory words to compose a memory block. Then it sends this memory block and its address to \seceng. On its turn, \seceng~uses \pmmu~to bring the corresponding \ptag~of that memory block from \ptagmem, while \ptaggen~computes a \ptag~using the content served by \handler. After that, the \ptag~brought from \ptagmem~and the one computed are compared. If they match, \seceng~knows that neither the \ptag~nor the memory block were tampered with. Otherwise, \seceng~alerts the handler that can isolate the processor or sends a non-maskable interrupt to the processor.
 
 \subsection{Bus Handler (\handler)}
 \label{subsec:handler}
@@ -82,6 +78,46 @@ Here is how \cshia's components work together. \handler~checks for memory read-w
 \subsection{\ptagmem}
 \label{subsec:ptagmem}
 \lorenipsuns
+
+
+
+\section{Operation Modes}
+\label{sec:opmodes}
+
+%describe all
+
+
+\subsection{Runtime Phase}
+\label{subsec:runtimephase}
+\def\fenroll{Figure \ref{fig:fuzzy-extractor} \subref{fig:fuzzy-enroll}}
+\def\fregen{Figure \ref{fig:fuzzy-extractor} \subref{fig:fuzzy-regen}}
+After the enrollment phase, \cshia~instances are ready for distribution.Here is how \cshia's components work together. \handler~checks for memory read-write operations of the processor. When it perceives a memory read it will capture memory words \andor~request memory words to compose a memory block. Then it sends this memory block and its address to \seceng. On its turn, \seceng~uses \pmmu~to bring the corresponding \ptag~of that memory block from \ptagmem, while \ptaggen~computes a \ptag~using the content served by \handler. After that, the \ptag~brought from \ptagmem~and the one computed are compared. If they match, \seceng~knows that neither the \ptag~nor the memory block were tampered with. Otherwise, \seceng~alerts the handler that can isolate the processor or sends a non-maskable interrupt to the processor.
+
+
+For write operations, the process is simpler. Once any memory block that reached the processor was verified for integrity and authenticity, \handler~can serve the cache line to \seceng~that uses \ptaggen~to compute a new \ptag~and \pmmu~sends that \ptag~to \ptagmem.  During the product lifetime, the device can be rebooted and turned off and on multiple times. While this will not affect \ptags, which are externally stored in \ptagmem, the secret key has to be recovered every time the system comes back from off-line periods. This recovery procedure of the \fuzzy~is described next.
+
+\subsubsection{Key Regeneration}
+\label{subsubsec:Key-Regenation}
+\begin{figure}[!t]
+	\centering
+	\includegraphics[scale=0.325]{key-construction}
+	\caption{Key generation on \cshia.}
+	\label{fig:key-construction}
+\end{figure}
+
+During the enrollment there were 8 challenges selected to produce four $r_i$ and four $w_i$ values. These challenges and helper data can be exposed off-chip and stored in \ptag~Memory if the designer chooses to do so. The recovery process of the secret key can be seen in \fregen. After using the challenges and all helper data, the syndromes are recovered. Due to inconsistent nature of \pufs, the fuzzy extractor actually recovers bit-flipped versions $w'_i$ and $r'_i$, what leads to the \bch~decoder receive $r'$ and $s'$. Once bit flips in $r_i$ values are corrected, the \fe~uses all $r_i$ to regenerate the secret key as Figure \ref{fig:key-construction} shows.
+
+\subsection{Enrollment Phase}
+\label{subsec:Enrollment-Phase}
+
+In order to ensure authenticity and integrity, an initial procedure has to be conducted by the manufacturer\slash{}vendor. This enrollment procedure will activate the \fuzzy~to extract the secret key from \pufs. Once that is done, the \handler~brings all memory blocks for tag generation. Next, we detail this procedure.
+
+\subsubsection{Key Extraction}
+\label{subsubsec:Key-Extraction}
+
+\ptag~Generator implements a Pseudo-Random Function (\prf), which is a primitive cryptographic very similar to a hash function with an important difference: the input processing is based on a secret key. In order to provide uniqueness to every \cshia~instance this key has to be unique. As aforementioned, \pufs~cannot be cloned, thus they can provide this uniqueness. Nevertheless, one big conundrum of using electronic \pufs~to generate keys is that they are inherently unstable. Due to their nature of leveraging on imperfection of the fabrication process, external factors such as temperature variation, voltage variation, etc., can interfere on their responses. Thus, varying responses to challenges during the lifetime of devices. In order to provide consistence in \puf~responses, \fuzzy~(\fe) are employed. In simple terms, \fes~are schemes comprised of an extraction algorithm and a recovery procedure. Becker provides a solid review and formal definitions in \cite{Becker2017:RobustFuzzyExtractor}.
+
+There are multiple ways of implementing a \fuzzy. Originally, \cshia~was proposed using a Code-offset \fe, which is well-known to reduce entropy of extracted keys \cite{Armknecht2011:Formalization}. To strengthen the \cshia~design, we now use an adapted version of the Index-based Syndrome (\ibs) \fe~proposed by Yu and Devadas in \cite{Yu2010:RobustErrorCorrection}. \fenroll~illustrates the process of key extraction of \cshia's \fe. In general terms, a bit string $r$ is extracted from \pufs. Then, the \fe~generates a syndrome $s$ of $r$ using a $(n,k,t)$ Error Correction Code (\ecc). The \fe~also extracts a bit string $w$ and combines it to the syndrome $s$ to generate an encoded helper data $h$. This helper data $h$ can be externally exposed and will not leak information about $r$ (that can be used as secret key or derive the key).
 
 
 \begin{figure*}[!ht]
@@ -104,26 +140,6 @@ Here is how \cshia's components work together. \handler~checks for memory read-w
 	\label{fig:fuzzy-extractor}
 \end{figure*}
 
-For write operations, the process is simpler. Once any memory block that reached the processor was verified for integrity and authenticity, \handler~can serve the cache line to \seceng~that uses \ptaggen~to compute a new \ptag~and \pmmu~sends that \ptag~to \ptagmem. We can see \pmmu~for now as a black box, until the end of this section, when we describe its complete functionality. The following subsections describe the two phases of \cshia: enrollment and runtime. 
-
-\section{Enrollment Phase}
-\label{sec:Enrollment-Phase}
-
-In order to ensure authenticity and integrity, an initial procedure has to be conducted by the manufacturer\slash{}vendor. This enrollment procedure will activate the \fuzzy~to extract the secret key from \pufs. Once that is done, the \handler~brings all memory blocks for tag generation. Next, we detail this procedure.
-
-\subsection{Key Extraction}
-\label{subsec:Key-Extraction}
-
-\ptag~Generator implements a Pseudo-Random Function (\prf), which is a primitive cryptographic very similar to a hash function with an important difference: the input processing is based on a secret key. In order to provide uniqueness to every \cshia~instance this key has to be unique. As aforementioned, \pufs~cannot be cloned, thus they can provide this uniqueness. Nevertheless, one big conundrum of using electronic \pufs~to generate keys is that they are inherently unstable. Due to their nature of leveraging on imperfection of the fabrication process, external factors such as temperature variation, voltage variation, etc., can interfere on their responses. Thus, varying responses to challenges during the lifetime of devices. In order to provide consistence in \puf~responses, \fuzzy~(\fe) are employed. In simple terms, \fes~are schemes comprised of an extraction algorithm and a recovery procedure. Becker provides a solid review and formal definitions in \cite{Becker2017:RobustFuzzyExtractor}.
-
-There are multiple ways of implementing a \fuzzy. Originally, \cshia~was proposed using a Code-offset \fe, which is well-known to reduce entropy of extracted keys \cite{Armknecht2011:Formalization}. To strengthen the \cshia~design, we now use an adapted version of the Index-based Syndrome (\ibs) \fe~proposed by Yu and Devadas in \cite{Yu2010:RobustErrorCorrection}. \fenroll~illustrates the process of key extraction of \cshia's \fe. In general terms, a bit string $r$ is extracted from \pufs. Then, the \fe~generates a syndrome $s$ of $r$ using a $(n,k,t)$ Error Correction Code (\ecc). The \fe~also extracts a bit string $w$ and combines it to the syndrome $s$ to generate an encoded helper data $h$. This helper data $h$ can be externally exposed and will not leak information about $r$ (that can be used as secret key or derive the key).
-
-\begin{figure}[!t]
-	\centering
-	\includegraphics[scale=0.325]{key-construction}
-	\caption{Key generation on \cshia.}
-	\label{fig:key-construction}
-\end{figure}
 
 To fully explain \fenroll, the chosen parameters are detailed. First, \cshia~incorporates \pufs~that produce 64-bit responses (more details in the next section). These \pufs~will be responsible to generate each string $r$ and $w$ that are 64 bits long. To match the length of $r$ and $w$, \cshia~has a $(127, 64, 10)$-\bch~\ecc. As \fenroll~depicts, there are four bit strings $r_i$, which are compounded two by two and fed to the \prf~(Figure \ref{fig:key-construction}). Such combinations were specifically designed to match the \prf~chosen for \cshia, the \siphash~\cite{Aumasson2012:SipHash}, which has an output of 64 bits and uses key of 128 bits. Therefore, the first pair of bit strings $r_i$ is concatenated with a constant and processed by the \prf~using the second pair of bit string $r_i$ as key. That generates a hash $K_1$. Then, inverting their places and concatenating the second pair with a different constant, a hash $K_2$ is obtained. Concatenating $K_1$ with $K_2$ results in $K$ which is the secret key of \cshia. Notice that $C_1$ and $C_2$ in Figure \ref{fig:key-construction} are replacing addresses for input of the \ptaggen. Further details of security will be given in the following sections, however, one can notice that assuming that each bit string $r_i$ has at least half of their length of entropy, each part of the key will have full entropy. Hence, the key has full entropy. 
 
@@ -141,13 +157,3 @@ The Enrollment Phase proceeds to tag the memory range the manufacturer\slash{}ve
 % \label{paragraph:Merkle-Tree-Generation}
 
 % A \mt~solution is more complex. The first procedure is very straightforward. \seceng~receives memory blocks and their addresses from \handler~and uses \ptaggen~to generate \ptags. \pmmu~receives these \ptags~and sends them to \ptagmem. After all memory blocks had their \ptags~generated, \pmmu~starts to bring \ptags~of data memory blocks. As soon as a chunk of \ptags~is formed, a \ptag~internal address of the chunk is calculated. \pmmu~provides this internal address and the chunk to \ptaggen~that generates a \ptag. This \ptag~is returned to \pmmu~that stores it in \ptagmem. This process will continuously happen (as we can see in Figure \ref{fig:vtree}) until \pmmu~identify that the last \ptag~calculated has no siblings. Hence, it is the root \ptag, which must be stored inside \pmmu. It is worth to clarify that \ptag~internal address is an address space that facilitates computation and identification of descendants and ancestors. Each internal address is directly translated to a physical address by \pmmu~and this translation has as goal to minimize unused spaces in \ptagmem. Moreover, in terms of security, this internal address mitigates a very specific attack on the tree, in which an descendant has the same \ptag~as one of its ancestors. In this case, an attacker could try to perform a relocation attack likewise. 
-
-\section{Runtime Phase}
-\label{sec:Runtime-Phase}
-
-After the enrollment phase, \cshia~instances are ready for distribution. During the product lifetime, the device can be rebooted and turned off and on multiple times. While this will not affect \ptags, which are externally stored in \ptagmem, the secret key has to be recovered every time the system comes back from off-line periods. This recovery procedure of the \fuzzy~is described next.
-
-\subsection{Key Regeneration}
-\label{subsec:Key-Regenation}
-
-During the enrollment there were 8 challenges selected to produce four $r_i$ and four $w_i$ values. These challenges and helper data can be exposed off-chip and stored in \ptag~Memory if the designer chooses to do so. The recovery process of the secret key can be seen in \fregen. After using the challenges and all helper data, the syndromes are recovered. Due to inconsistent nature of \pufs, the fuzzy extractor actually recovers bit-flipped versions $w'_i$ and $r'_i$, what leads to the \bch~decoder receive $r'$ and $s'$. Once bit flips in $r_i$ values are corrected, the \fe~uses all $r_i$ to regenerate the secret key as Figure \ref{fig:key-construction} shows.
