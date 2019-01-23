@@ -64,12 +64,267 @@ As Section \ref{subsec:Integrity} discussed, the main resource to provide integr
 \seceng~has three major subcomponents. The main one is the \ptag~Generator (\ptaggen), which uses input data whose length is equal to a memory block concatenated with its address to generate \ptags. The \fuzzy~is only used when the system loses its secret key. For instance, after a power cycle. Thus, when the system is powered on, the \fuzzy~will extract the \puf-based key and provide it to \ptaggen. Finally, we have the \ptag~Memory Management Unit (\pmmu). The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~and also decode internal addresses of \ptags~to physical addresses of \ptagmem. In addition to that, \pmmu~can have two distinct designs. If a designer chooses to use timestamps as solution for replay attacks, \pmmu~will have an internal memory to store and control timestamps of the memory blocks. However, if the solution for replay attacks is a \mt, \pmmu~will control verification and update of the tree, as well as it will have a cache memory, the \ptagcache, to speed up these tasks.
 
 
+%\subsection{Bus Handler (\handler)}
+%\label{subsec:handler}
+%\lorenipsuns
+%\subsection{Security Engine (\seceng)}
+%\label{subsec:seceng}
+%\lorenipsuns
+
+
+
+%===========================================================================================================================================================
+
+%======================================================
+%Security Handler
+%======================================================
 \subsection{Bus Handler (\handler)}
-\label{subsec:handler}
-\lorenipsuns
-\subsection{Security Engine (\seceng)}
-\label{subsec:seceng}
-\lorenipsuns
+This block has three main functions, monitoring the processor requests and responde then when necessary, 
+assemble a line that can be multiple cache lines or any other combination necessary to be in the format
+ of the security engine input  and prevent the processor the execute unsafe or unverified instructions
+ as well as don't let  it  write in the bus any unsafe operation.
+%======================================================
+%Block Diagram
+%======================================================
+\subsubsection{Block Diagram}
+
+\begin{figure*}[!ht]
+	\centering
+	\includegraphics[scale=0.45]{bus_handler}
+    \caption{Bus Handler  black box  }
+%	\vspace*{-9pt} 
+	\label{fig:bhbb}
+\end{figure*}
+
+
+%======================================================
+%Signal Description
+%======================================================
+\subsubsection{Signal Description}
+
+The inputs and outputs of this block can be split in three interfaces and control being
+the signals  ahbo\_in and ahbi\_out the inteface with the leon3 processor,  ahbo\_out  and ahbi\_in
+the interface with the bus , ptag\_sval\_in and ptag\_sreq\_out with the security engine  and control
+ the signals clk ,reset\_n and bypass\_in.
+ The description of each type can be found in the Appendix \ref{ap:signals}.
+\begin{table}[H]
+\centering
+\label{table:shports}
+\begin{tabular}{l l l l}
+\textbf{Port}   & \textbf{in/out} & \textbf{Type}        & \textbf{Description} 	\\ \hline \hline
+clk             & in              & std\_ulogic          & system clock         	\\ \hline
+rstn            & in              & std\_logic           & negated rset         	\\ \hline
+bypass\_in      & out             & std\_logic           & bypass input         	\\ \hline
+ptag\_sreq\_out & out             & ptag\_sec\_req\_type & security check request    	\\ \hline
+ptag\_sval\_in  & in              & ptag\_sec\_val\_type & security check response  	\\ \hline
+ahbi\_in        & in              & ahb\_mst\_in\_type   & AHB input from bus      	\\ \hline
+ahbi\_out       & out             & ahb\_mst\_in\_type   & AHB output to processor      \\ \hline
+ahbo\_in        & in              & ahb\_mst\_out\_type  & AHB input from processor    \\ \hline
+ahbo\_out       & out             & ahb\_mst\_out\_type  & AHB output to BUS            \\ \hline
+\end{tabular}
+ \caption{Ports of the security handler}
+\end{table}
+
+
+
+
+
+\subsubsection{Functional Descricption}
+
+%   \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.85\textwidth]{Figures/pdf/sec_hand_state_machine.pdf}
+%     \caption{Top of the system  }
+%     \label{fig:phsm}
+% \end{figure}
+\begin{figure*}[!ht]
+	\centering
+	\includegraphics[scale=0.45]{sec_engine_sm}
+    \caption{Bus Handler state machine  }
+%	\vspace*{-9pt} 
+	\label{fig:phsm}
+\end{figure*}
+Since this one state machine control all the operation of the security handler the functional 
+description of this block can be explained using the state transictions of Figure \ref{fig:phsm} and the 
+following state description:
+
+\begin{itemize}
+ \item{\textbf{IDLE}}
+ 
+ The system stay in this state  until the processor signalize a request, givem the request 
+ there are three options, the line contains the content requested by the processor, in this case
+ the request can be responded in the SERVE LEON state, the line doesn't contain the content required
+ so a new line must be loaded in the READ GRANT state or the current line is not safe and the system will halt
+ going to UNSAFE state.
+ 
+  \item{\textbf{READ GRANT}}
+  
+  This state is required for any transaction in the bus, it requests the bus grant for the arbiter prior to 
+  begin the request, once the arbiter gives the grant the line status is checked and if the line is dirty( the processor
+  update any value in the line) then it needs to be written in the meomory before loading a new line, if this is the case
+   then the system goes to WRITE LINE state, if no changes were made in the line then a new line is loaded in the READ LINE 
+   state. The steps needed to aquire the bus grant are shown in section \ref{op:grant}.
+  
+  \item{\textbf{READ LINE}}
+  
+  
+  A new line will be loaded from the main memory to the local buffer,the  steps needed to execute
+   a read or write operation is shown  in \ref{op:rw}, so a counter is started and counts the 
+  number of words the bus provided, so when the line is loaded the line status is changed to valid and
+  the system goes back to IDLE state. When  the line is ready  then a request is sent to the security engine 
+  to check if the line is safe and the system will freeze until the integrity of the line is confirmed.
+
+ \item{\textbf{WRITE LINE}}
+ 
+ Once the line is dirty and need to be written in the main memory, a counter is  starded, similar to the read process 
+ but it now counts each time the write request is confirmed by the bus, when all words were written  the line sirty status 
+ is now changed to not dirty and the system goes to IDLE. In the process of writing the line to memory, in parallel a request is made 
+ to the security engine to calculated the new PTAG related tohis line and store it in the PTAG memory.
+
+ \item{\textbf{SERVE LEON}}
+
+ On this state  all LEON requests  read or write are executed, if the content needed is  in the line. 
+ when any operetaion requires a word  that is not in the local line buffer then the system  goes back to IDLE state.
+ 
+ 
+ \item{\textbf{UNSAFE}}
+ 
+ 
+When a security check fails  on the IDLE state the system uses this as a trap state to halt.
+
+\end{itemize}
+
+
+
+
+\subsubsection{subsection}{Operation}
+
+% \begin{subsubsection}{Requesting Grant}
+% \label{op:grant}
+
+
+%   \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.95\textwidth]{Figures/others/grant_nowait.png}
+%     \caption{Requesting grant with no wait states  }
+%     \label{fig:gnwsm}
+% \end{figure}
+
+
+%   \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.95\textwidth]{Figures/others/grant_wait.png}
+%     \caption{Requesting grant with wait states  }
+%     \label{fig:gwsm}
+% \end{figure}
+% \end{subsubsection}
+
+% \begin{subsubsection}{Read and Write BUS Operations}
+% \label{op:rw}
+
+
+%   \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.95\textwidth]{Figures/others/undef_burst_length.png}
+%     \caption{burst transfer with undefigned lengths read and write }
+%     \label{fig:ublsm}
+% \end{figure}
+
+% \end{subsubsection}
+
+% \end{subsection}
+% \end{section}
+
+
+
+
+%======================================================
+%Security Engine
+%======================================================
+\subsection{Security Engine}
+
+This block is responsable for the interface with the external memory wich stores the physical tags values
+for each sets of challenges, and for calculatng this values using one or more PUFs, the PUF description is in section XX.
+
+
+\begin{figure*}[!ht]
+	\centering
+	\includegraphics[scale=0.45]{security_engine_bb}
+    \caption{Security engine  black box  }
+%	\vspace*{-9pt} 
+	\label{fig:sebb}
+\end{figure*}
+
+
+
+
+\subsubsection{Signal Description}
+
+\begin{table}[H]
+\centering
+\label{table:seports}
+\begin{tabular}{l l l l}
+
+\textbf{Port}   & \textbf{in/out} & \textbf{Type}        & \textbf{Description} 	\\ \hline \hline
+clk             & in              & std\_ulogic          & system clock         	\\ \hline
+rstn            & in              & std\_logic           & negated reset         	\\ \hline
+ptag\_sreq\_in  & in              & ptag\_sec\_req\_type & security check request    	\\ \hline
+ptag\_sval\_out & out             & ptag\_sec\_val\_type & security check response  	\\ \hline
+ptag\_mreq\_out & out             & ptag\_mreq\_type 	 & ptag memory  request    	\\ \hline
+ptag\_mresp\_in & in              & ptag\_mresp\_type 	 & ptag memory  response  	\\ \hline
+\end{tabular}
+ \caption{Ports of the security engine}
+\end{table}
+
+
+
+
+\subsubsection{Functional Descricption}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.90\textwidth]{figures/pdf/sec_engine_sm.pdf}
+    \caption{Top of the system  }
+    \label{fig:sesm}
+\end{figure}
+
+
+The functional operation of this block consists in two basic actions, given a challenge
+calulate the PTAG  using the internal PUF  and if this is a check operation the compare
+ the calculated value with the equivalent from the PTAG memory, if its a write operations
+ than just store the calculated value in the PTAG memory.the state machine needed to complete
+ this task is described bellow.
+
+\begin{itemize}
+  \item{\textbf{IDLE}}
+ 
+The security engine stays in  IDLe  until a valid challenge is siganlized, then the input is 
+registered and a request for the PUF is sent to calculate tha PTAG , as well as read operation 
+ to the PTAG memory  in case of a check operation.
+ 
+  \item{\textbf{CALC PTAG}}
+  When  a new challenge comes to be checked or written, a new ptag is calculated using the internal PUF, 
+  after the calculation is ready the controller goes either to VALIDATE state if this is a check operation
+  or to WRITE PTAg state if this is a write operation.
+  
+
+  \item{\textbf{VALIDATE}}
+  Since in this state the PTAG from the PTAG memory and the calculated from the PUF are ready this state compares
+  the values and send the result as a security response to the security handler. Then  the system goes back to IDLE.
+  
+
+ \item{\textbf{WRITE PTAG}}
+ This state  uses the memory interface to  write the calculated PTAG in the PTAG memory and send a confirmation
+ through the security response to the security handler.
+
+
+
+\end{itemize}
+
+
+%===========================================================================================================================================================
+
+
+
 
 \subsection{Memory Management Unit (\pmmu)}
 \label{subsec:pmmu}
