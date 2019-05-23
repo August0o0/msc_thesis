@@ -52,16 +52,17 @@
 	\label{fig:cshia}
 \end{figure*}
 
-\cshia~was originally proposed in \cite{Hoffman2015} as an architecture for \iot. However, we believe that \cshia~fits in a variety of embedded system applications that can benefit from its architectural design decisions. As we stated before, many embedded system applications do not need secrecy\slash{}confidentiality, but strongly require code and data authenticity and integrity. Using the original work as base, we modified some elements to provide stronger security features, as well as make \cshia~adaptable to a \fpga~implementation. This section focus on presenting our \cshia~main architectural components and how they work to provide authenticity and integrity.
+\cshia~was originally proposed in \cite{Hoffman2015} as an architecture for \iot. However, we believe that \cshia~fits in a broader class of embedded system applications that can benefit from its nice security features. As we stated before, many embedded system applications do not need secrecy\slash{}confidentiality, but strongly require code and data authenticity and integrity. 
+Using the original work with some architectural elements modified to provide stronger security features, the first LEON3 \fpga~ based implementation of \cshia was realized. This section focus on presenting our \cshia~implementation components and how they work to provide authenticity and integrity.
 
 \section{Components of the Architecture}
 \label{sec:Components-of-the-Architecture}
 
 As Section \ref{subsec:Integrity} discussed, the main resource to provide integrity are tags. Since \cshia~uses \puf-based keys to generate tags, we called them \puf-Tags, or \ptags~for short. \ptags~are the core of \cshia's design. They will be unique for each instance of \cshia~due to the unclonability property of \pufs. That ensures one-to-one relatioship between programs and instances, providing authenticity. To handle \ptags, three main components are added to a conventional embedded system architecture. They are: The \ptag~Memory; the Bus Handler (\handler); and the Security Engine (\seceng). Figure \ref{fig:cshia} shows this design and how components communicate between themselves. 
 
-\ptag~Memory is an external memory and has its own buses. This architectural decision gives freedom to designers that can choose bus width, frequency, address space, etc. Because the processor is not aware of any additional component of \cshia, \handler~intercepts data transfers between processor and memory in order to provide them to \seceng~that generates tags. \handler~can also request data in behalf of the processor to main memory to form complete memory blocks that are necessary to generate \ptags.
+\ptag~Memory is an external memory and has its own buses. This architectural decision gives freedom to designers that can choose bus width, frequency, address space, etc. Because the processor is not aware of any additional component of \cshia, \handler~intercepts data transfers between processor and memory in order to provide them to \seceng~that generates tags. \handler~can also request data ( on behalf of the processor) to main memory so as  form complete memory blocks that are necessary to generate \ptags.
 
-\seceng~has three major subcomponents. The main one is the \ptag~Generator (\ptaggen), which uses input data whose length is equal to a memory block concatenated with its address to generate \ptags. The \fuzzy~is only used when the system loses its secret key. For instance, after a power cycle. Thus, when the system is powered on, the \fuzzy~will extract the \puf-based key and provide it to \ptaggen. Finally, we have the \ptag~Memory Management Unit (\pmmu). The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~and also decode internal addresses of \ptags~to physical addresses of \ptagmem. In addition to that, \pmmu~can have two distinct designs. If a designer chooses to use timestamps as solution for replay attacks, \pmmu~will have an internal memory to store and control timestamps of the memory blocks. However, if the solution for replay attacks is a \mt, \pmmu~will control verification and update of the tree, as well as it will have a cache memory, the \ptagcache, to speed up these tasks.
+\seceng~has three major subcomponents. The main one is the \ptag~Generator (\ptaggen), which uses input data whose length is equal to a memory block concatenated with its address to generate \ptags. The \fuzzy~is only used when the system loses its secret key. For instance, after a power cycle. Thus, when the system is powered on, the \fuzzy~will extract the \puf-based key and provide it to \ptaggen. Finally, we have the \ptag~Memory Management Unit (\pmmu). The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~and also to decode internal addresses of \ptags~to physical addresses of \ptagmem. In addition to that, \pmmu~can have two distinct designs. If a designer chooses to use timestamps as solution for replay attacks, \pmmu~will have an internal memory to store and control timestamps of the memory blocks. However, if the solution for replay attacks is a \mt\cite{FINDAREFERENCE}, \pmmu~will control verification and update of the tree, as well as it will have a cache memory, the \ptagcache, to speed up these tasks.
 
 
 %\subsection{Bus Handler (\handler)}
@@ -79,8 +80,9 @@ As Section \ref{subsec:Integrity} discussed, the main resource to provide integr
 %Security Handler
 %======================================================
 \subsection{Bus Handler (\handler)}
-This block has three main functions, monitoring the processor requests and responde then when necessary, 
-assemble a line that can be multiple cache lines or any other combination necessary to be in the format
+This block has three main functions, monitoring the processor requests and respond then when necessary, 
+assemble a line %explain better what line means
+that can be multiple cache lines or any other combination necessary to be in the format
  of the security engine input  and prevent the processor the execute unsafe or unverified instructions
  as well as don't let  it  write in the bus any unsafe operation.
 %======================================================
@@ -103,7 +105,7 @@ assemble a line that can be multiple cache lines or any other combination necess
 \subsubsection{Signal Description}
 
 The inputs and outputs of this block can be split in three interfaces and control being
-the signals  ahbo\_in and ahbi\_out the inteface with the leon3 processor,  ahbo\_out  and ahbi\_in
+the signals  ahbo\_in and ahbi\_out the interface with the LEON3 processor,  ahbo\_out  and ahbi\_in
 the interface with the bus , ptag\_sval\_in and ptag\_sreq\_out with the security engine  and control
  the signals clk ,reset\_n and bypass\_in.
  The description of each type can be found in the Appendix \ref{ap:signals}.
@@ -144,16 +146,16 @@ ahbo\_out       & out             & ahb\_mst\_out\_type  & AHB output to BUS    
 %	\vspace*{-9pt} 
 	\label{fig:phsm}
 \end{figure*}
-Since this one state machine control all the operation of the security handler the functional 
-description of this block can be explained using the state transictions of Figure \ref{fig:phsm} and the 
+Since this  state machine controls all the operations of the security handler the functional 
+description of this block can be explained using the state transactions of Figure \ref{fig:phsm} and the 
 following state description:
 
 \begin{itemize}
  \item{\textbf{IDLE}}
  
- The system stay in this state  until the processor signalize a request, givem the request 
+ The system stay in this state  until the processor signalizes a request, given the request 
  there are three options, the line contains the content requested by the processor, in this case
- the request can be responded in the SERVE LEON state, the line doesn't contain the content required
+ the request can be responded in the SERVE LEON state, the line does not contain the content required
  so a new line must be loaded in the READ GRANT state or the current line is not safe and the system will halt
  going to UNSAFE state.
  
@@ -161,9 +163,9 @@ following state description:
   
   This state is required for any transaction in the bus, it requests the bus grant for the arbiter prior to 
   begin the request, once the arbiter gives the grant the line status is checked and if the line is dirty( the processor
-  update any value in the line) then it needs to be written in the meomory before loading a new line, if this is the case
+  update any value in the line) then it needs to be written in the memory before loading a new line, if this is the case
    then the system goes to WRITE LINE state, if no changes were made in the line then a new line is loaded in the READ LINE 
-   state. The steps needed to aquire the bus grant are shown in section \ref{op:grant}.
+   state. The steps needed to acquire the bus grant are shown in section \ref{op:grant}.
   
   \item{\textbf{READ LINE}}
   
