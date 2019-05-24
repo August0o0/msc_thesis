@@ -10,13 +10,15 @@
 %This work  intents to extend the preliminary contributions in \cite{Hoffman2015}. In particular, design a \cshia~\fpga~prototype in conjunction with a security analysis and further evaluate its impact on performance and robustness .
 
 %Embedded systems
-The demand for code/data integrity and authenticity has steadily increased. The wide spectrum of known attacks currently poses a threat to a variety of embedded systems that need constant protection against tampering. A particular class of embedded systems which must resist many forms of tampering comprises systems equipped with a large external non-volatile memory to store software and data, such as voting machines, smart metering devices and employee attendance control systems. These systems need to provide integrity and authenticity guarantees, but usually not secrecy or confidentiality, in order to be easily audited by government authorities and independent experts.
+The demand for code/data integrity and authenticity has steadily increased. The wide spectrum of known attacks currently poses a threat to a variety of embedded systems that need constant protection against tampering. A good example of such systems are the ones that are equipped with large external non-volatile memories to store software and data, like voting machines, smart metering devices and employee attendance control systems. These systems need to provide integrity and authenticity guarantees, but usually not secrecy or confidentiality, in order to be easily audited by governmental authorities and independent experts.
 
-Due to the stringent nature of available resources of embedded systems, software solutions for code and data integrity do not fit best. In addition, software authenticity would involve a third party certification authority. Therefore, hardware solutions are desirable for such systems. A myriad of hardware solutions for code and data authenticity and integrity have been proposed in the literature (\cite{Suh2005:AEGISImplementation,Vaslin2009:OTP,Hong2010:FEDTIC,Bobade2015:SecurityFPGA}), however, some of those solutions target high-end embedded systems or more powerful configurations, requiring at least a two-level cache in the processor for their performance overhead not to be prohibitive. Other approaches need modifications on the Instruction Set Architecture (\isa) or processor datapath, leading to complete redesign of code, compilers, operating systems, among others. Moreover, not all solutions provide integrity and authenticity.
+Due to the stringent nature in available resources of embedded systems, software solutions for code and data integrity do not lead to efficient solution due to their impact in the performance and power consumption of the system. In addition, software authenticity would involve a third party certification authority which considerably increasing the complexity of the final solution, thus making a hardware a potential effective solution to such a problem. A myriad of hardware solutions for code and data authenticity and integrity have been proposed in the literature (\cite{Suh2005:AEGISImplementation,Vaslin2009:OTP,Hong2010:FEDTIC,Bobade2015:SecurityFPGA}), however, some of those solutions target high-end embedded systems or more powerful configurations.
+%(guido is rigth this is  not mentioned anywhere elese)requiring at least a two-level cache in the processor for their performance overhead not to be prohibitive.
+Other approaches need modifications on the Instruction Set Architecture (\isa) or processor datapath, leading to complete redesign of code, compilers, operating systems, among others. Moreover, not all solutions provide integrity and authenticity.
 
-Recently, an architecture aiming at code/data authenticity and integrity was proposed in \cite{Hoffman2015}. The Computer Security by Hardware-Intrinsic Authentication (\cshia) provides authenticity by authenticating all memory blocks of the external memory using a unique key extracted from Physical Unclonable Functions (\pufs) implemented in each instance. The authentication tags (called \ptags) are computed during an enrollment procedure and later verified or updated on runtime for each memory block brought to the processor. The main advantages of \cshia over the previous hardware solutions are that it does not require changes in the \isa~or datapath, being adaptable to most of embedded system architectures while providing complete software compatibility, and also using a separate bus for the tag memory, which gives to designers freedom to match timing requirements to hide verification overhead.
+Recently, an architecture aiming at code/data authenticity and integrity was proposed in \cite{Hoffman2015}. The Computer Security by Hardware-Intrinsic Authentication (\cshia) provides authenticity by authenticating all memory blocks of the external memory using a unique key extracted from Physical Unclonable Functions (\pufs) implemented in each instance. The authentication tags (called \ptags) are computed during an enrollment procedure and later verified or updated on runtime for each memory block brought to the processor. The main advantages of \cshia~ over the previous hardware solutions are that it does not require changes in the \isa~or datapath, being adaptable to most of embedded system architectures while providing complete software compatibility, it also uses a separate bus for the tag memory, which gives designers the freedom to match timing requirements so as to hide verification overhead.
 
-Basing on Gaisler's \leon~\cite{Leon} \fpga~implementation, this work presents a proof-of-concept of \cshia. The main goal of our implementation was to improve the original version of the architecture and add more flexible design choices. Besides presenting an in depth description of the hardware implementation, the design tradeoffs and the integration between the architecture and a real processor.
+
 %TODO  Focus on the architecture  and design tradoffs, caio is goin to describe the security part 
 
 %, we evaluated performance and storage overheads, computed area and power estimates, and also performed a security analysis. 
@@ -27,22 +29,24 @@ Basing on Gaisler's \leon~\cite{Leon} \fpga~implementation, this work presents a
 
 \section{Contributions}
 \label{sec:contributions}
-The main contributions to this work are the following:
+The main contributions to this work are the following: 
 \begin{enumerate}[label=(\alph*)]
     \item it provides the first hardware implementation of the CSHIA architecture ,using LEON3 processor;
     \item it analyses the trade-offs of the resulting architecture 
 \end{enumerate}
-\section{Publications}
-\label{sec:publications}
-The contributions of this work were published  in the following venues 
-\begin{itemize}
-\item{Pub0} Publication 1  - description 1
-\item{Pub1} Publication 2 - description 2
-\end{itemize}
+
+% the publications submitted will be mentioned  inthe conlcusions and in te presentation
+% \section{Publications}
+% \label{sec:publications}
+% The contributions of this work were published  in the following venues 
+% \begin{itemize}
+% \item{Pub0} Publication 1  - description 1
+% \item{Pub1} Publication 2 - description 2
+% \end{itemize}
 
 \section{Organization of the dissertation}
 \label{sec:organization_of_dissertation}
-This work is organized as follows.  A review of the related work is presented in the chapter \ref{chap:related_work}. Chapter \ref{chap:fundamental_concepts} introduces the necessary concepts  needed for this work. The CSHIA architecture implementation is described in Chapter \ref{chap:cshia_architecture}. Chapter \ref{caho:cshia_prototype} details the prototype and all implementation requirements. The evaluation of the prototype is presented in Chapter \ref{chap:cshia:evaluation} ans Chapter \ref{chap:conclusion} concludes this work.
+This work is organized as follows. Chapter \ref{chap:fundamental_concepts} introduces the necessary concepts  needed for this work. A review of the related work is presented in the chapter \ref{chap:related_work}.  The CSHIA architecture implementation is described in Chapter \ref{chap:cshia_architecture}. Chapter \ref{chap:cshia_prototype} details the prototype and all implementation requirements. The evaluation of the prototype is presented in Chapter \ref{chap:cshia:evaluation} ans Chapter \ref{chap:conclusion} concludes this work.
 
 %Security issues in embedded system are discussed in Section \ref{sec:Security-Issues-in-Embedded-Systems}. Section \ref{sec:CSHIA} describes the architecture. Section \ref{sec:Implementation} provides details about the implementation of \cshia~in the \leon's platform. Section \ref{sec:Experiments-and-Results} discusses experiments and results. A security analysis of the \cshia~implementation is presented in Section \ref{sec:Security-Analysis}. Section \ref{sec:Related-Work} discusses related work and Section \ref{sec:Conclusions} concludes this work.
 

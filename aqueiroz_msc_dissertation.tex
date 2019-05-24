@@ -15,13 +15,14 @@
 \usepackage {subfig}
 \usepackage {float}
 % Para acrescentar comentários ao PDF descomente:
-\usepackage
- [pdfauthor={Augusto F. R. Queiroz},
-  pdftitle={Secure code execution using PUF authentication},
-  pdfkeywords={PUF}]%,
-%   pdfproducer={Latex with hyperref},
-%   pdfcreator={pdflatex}]
-{hyperref}
+% \usepackage
+%  [pdfauthor={Augusto F. R. Queiroz},
+%   pdftitle={Secure code execution using PUF authentication},
+%   pdfkeywords={PUF}]%,
+% %   pdfproducer={Latex with hyperref},
+% %   pdfcreator={pdflatex}]
+% {hyperref}
+\usepackage{hyperref}
 
 
 % *** GRAPHICS RELATED PACKAGES ***w
@@ -104,22 +105,15 @@
 \include{includes/preface}
 
 % O corpo da dissertação ou tese começa aqui:
+%this  group is to remove the spaces afte the chapters 
+\begingroup 
+% this is a ugly hack to clear the inserted cleapages - this is messing with the references!
+% \renewcommand{\cleardoublepage}{}
+% \renewcommand{\clearpage}{}
+
 \chapter{Introduction}
 \label{chap:introduction}
 \include{chapters/intro}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 \chapter{Fundamental concepts}
@@ -130,13 +124,12 @@
 \label{chap:related_work}
 \include{chapters/related}
 
-
 \chapter{CSHIA  Architecture}
 \label{chap:cshia_architecture}
 \include{chapters/architecture}
 
 \chapter{CSHIA  Prototype}
-\label{caho:cshia_prototype}
+\label{chap:cshia_prototype}
 \include{chapters/prototype}
 
 \chapter{CSHIA  Evaluation}
@@ -149,7 +142,7 @@
     \label{sec:conclusion}
 \section{Future Work}
     \label{sec:future_work}
-
+\endgroup
 % As referências:
 \bibliographystyle{plain}
 \bibliography{aqueiroz_msc_dissertation}
