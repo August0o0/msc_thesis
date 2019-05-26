@@ -1,21 +1,24 @@
 %======================================================================
-\section{Physical Unclonable Functions - PUFs}
+\section{Physical Unclonable Functions - \pufs~}
 \label{sec:pufs}
-\pufs~are physical functions created to mimic random functions. Their inputs, called challenges, and outputs, called responses, are designed to have a unique relation for every \puf~instance. This is achieved by leveraging on imperfections resulted from fabricating electronic devices.
+It is well known that every time an Integrated circuit(IC) is fabricated there are small random process variations, imperfections that make every path in a design unique, for a design where the goal is to have always the same behavior for all ICs, this imperfections are measured and errors are avoided by creating timing constraints that will guide the Electronic Design and Automation(EDA) tools to  generate error free paths and deliver a secure design. \pufs~are physical functions that instead of avoiding, take advantage of this inherent imperfections to mimic random functions. Their inputs, called challenges, and outputs, called responses, are designed to have a unique relation for every \puf~instance. 
 
-\subsection{PUF types}
+\subsection{\puf~ Types}
+It is possible to explore IC process variations in several ways\cite{DBLP:phdbasesearchMaes12}, a good and simple example to understand the behavior of this functions is an arbiter PUF, pictured in Figure \ref{fig:arbiterpuf}.
+This \puf~ is composed by a set of arbiter switches and  one arbiter, the latch, the idea behind this construction is to build two paths with the same layout length and compute the relative delay between this two paths given a challenge $X$ of size $N$.  For every arbiter $n$, if $X[i]$  is one both paths will pass through the arbiter, if its zero the inputs will be switched in the output  changing the delay of booth paths. To evaluate the output(Y) the challenge $X$ and a rising signal is provided to both paths, $Y$ is one if the signal to the latch data input (D) is faster, and zero otherwise. To get a response of size $Z$, this \puf~ construction  can be instantiated $Z$ times.
+
 \begin{figure*}[!ht]
 	\centering
 % 	\includegraphics[scale=0.45]{cshia}
 	\includegraphics[width=\textwidth]{arbiter}
-	\caption{The \cshia~architecture.}
+	\caption{One arbiter \puf~ that receives a challenge $X$ and produces the output $Y$.}
 %	\vspace*{-9pt} 
-	\label{fig:cshia}
+	\label{fig:arbiterpuf}
 \end{figure*}
 
-\subsection{PUF as a key}
-When a system needs a key in hardware for any purpose, such as encryption, authentication or any other application, this key needs to be generated  and stored in hardware
-\cite{puf-key-devadas-1278484}. The main advantage of using \pufs~as key generators is that they can produce keys at running time, this way, on-chip memories are not needed for key storage. Another benefit is that they are unclonable, meaning that even the manufacturer itself cannot produce two \puf~instances that will have the same set of Challenge-Response Pairs (\crps) \cite{Gassend2002:PUFs}.
+\subsection{\puf~ as a Cryptography  Key Generator }
+When a system needs a key in hardware for any purpose, such as encryption, authentication or any other application, this key needs to be generated  and stored in hardware \cite{puf-key-devadas-1278484}. The main advantage of using \pufs~as key generators is that they can produce keys at running time, this way, on-chip memories are not needed for key storage. Another benefit is that they are unclonable, meaning that even the manufacturer itself cannot produce two \puf~instances that will have the same set of Challenge-Response Pairs (\crps) \cite{Gassend2002:PUFs}.
+\cshia~ uses a SRAM \puf~ together with a Fuzzy Extractor and the key extraction process is described in Section \ref{subsubsec:Key-Extraction}.
 
 
 %======================================================================
