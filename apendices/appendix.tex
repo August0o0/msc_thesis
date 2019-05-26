@@ -1,0 +1,103 @@
+\chapter{Type Description}
+\label{ap:signals}
+
+\begin{table}[H]
+\centering
+\label{table:psrtype}
+\begin{tabular}{l l p{55mm}}
+\textbf{Signal} & \textbf{Type}      & \textbf{Description}                                         	\\ \hline \hline
+cache\_line 	& std\_logic\_vector & the entire cach line                                        	\\ \hline
+base\_addr  	& std\_logic\_vector & base physical address of the line                            	\\ \hline
+valid       	& std\_logic         & asserted if the line is valid                                	\\ \hline
+wr\_ptag    	& std\_logic         & asertedif the calculated ptag will be  writen in th e PTAG mem    \\  \hline
+\end{tabular}                                                                                                                                   
+\caption{\textbf{ptag\_sec\_req\_type} content description}                                                                                              
+\end{table}                                                                                                                                     
+
+
+\begin{table}[H]
+\centering
+\label{table:psvtype}
+\begin{tabular}{l l p{55mm}}
+\textbf{Signal} & \textbf{Type}      & \textbf{Description}                        \\ \hline \hline
+ptag 		& std\_logic\_vector & the calculated ptag                         \\ \hline
+valid 		& std\_logic         & asserted when  ptag is valid                \\ \hline
+line\_secure 	& std\_logic         & asserted if the provided line is secure     \\ \hline
+ready 		& std\_logic         & asserted when ready to receive a new line   \\  \hline
+\end{tabular}                                                                                                                                   
+\caption{\textbf{ptag\_sec\_val\_type} content description}                                                                                              
+\end{table}    
+
+
+
+
+\begin{table}[H]
+\centering
+\label{table:pmrqtype}
+\begin{tabular}{l l p{55mm}}
+\textbf{Signal} & \textbf{Type}      & \textbf{Description}                     \\ \hline \hline
+we      & std\_logic;                 & active high write enable                \\ \hline
+address & std\_logic\_vector           & memory address                         \\ \hline
+data    & std\_logic\_vector           & data to be writen                      \\ \hline
+\end{tabular}                                                                                                                                   
+\caption{\textbf{ptag\_mreq\_type} content description}                                                                                              
+\end{table}     
+
+\begin{table}[H]
+\centering
+\label{table:pmrtype}
+\begin{tabular}{l l p{55mm}}
+\textbf{Signal} & \textbf{Type}      & \textbf{Description}                     \\ \hline \hline
+data 		& std\_logic\_vector   & PTAG read from memory                  \\ \hline
+ \end{tabular}                                                                                                                                   
+\caption{\textbf{ptag\_mresp\_type} content description}                                                                                              
+\end{table}    
+
+
+
+
+\begin{table}[H]
+\centering
+\label{table:abhitype}
+\begin{tabular}{l l p{55mm}}
+\textbf{Signal} & \textbf{Type}      	& \textbf{Description}                  \\ \hline \hline
+    hgrant	& std\_logic\_vector 	& bus grant                             \\ \hline
+    hready	& std\_ulogic       	& transfer done                         \\ \hline
+    hresp	& std\_logic\_vector	& response type                         \\ \hline
+    hrdata	& std\_logic\_vector	& read data bus                         \\  \hline
+    hcache	& std\_ulogic       	& cacheable                             \\ \hline
+    hirq  	& std\_logic\_vector	& interrupt result bus                  \\ \hline
+    testen	& std\_ulogic       	& scan test enable                      \\ \hline
+    testrst	& std\_ulogic           & scan test reset          		\\  \hline
+    scanen 	& std\_ulogic           & scan enable              		\\ \hline
+    testoen 	& std\_ulogic           & test output enable      	 	\\ \hline
+ \end{tabular}                                                                                                                         
+\caption{\textbf{ahb\_mst\_in\_type} content description}                                                                                      
+\end{table}                                                                                             
+
+  
+  
+  
+\begin{table}[H]
+\centering
+\label{table:ahbotype}
+\begin{tabular}{l l p{55mm}}
+\textbf{Signal} & \textbf{Type}      & \textbf{Description}                     \\ \hline \hline  
+
+    hbusreq	& std\_ulogic           & bus request                           \\ \hline
+    hlock	& std\_ulogic           & lock request                          \\ \hline
+    htrans	& std\_logic\_vector	& transfer type                          \\  \hline
+    haddr	& std\_logic\_vector 	& address bus (byte)                    \\ \hline
+    hwrite	& std\_ulogic           & read/write                            \\ \hline
+    hsize	& std\_logic\_vector	& transfer size                         \\ \hline
+    hburst	& std\_logic\_vector	& burst type                             \\  \hline
+    hprot	& std\_logic\_vector	& protection control                     \\ \hline
+    hwdata	& std\_logic\_vector 	& write data bus                         \\ \hline
+    hirq   	& std\_logic\_vector	& interrupt bus                          \\ \hline
+    hconfig 	& ahb\_config\_type	& memory access reg.                    \\  \hline
+    hindex  	& integer  		& diagnostic use only                   \\ \hline
+ \end{tabular}                                                                                                                                 
+\caption{\textbf{ahb\_mst\_out\_type} content description}                                                                                            
+\end{table}                                                                                               
+
+
