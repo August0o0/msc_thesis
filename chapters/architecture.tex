@@ -56,13 +56,209 @@
 \cshia~was originally proposed in \cite{Hoffman2015} as an architecture for \iot. However, we believe that \cshia~fits in a broader class of embedded system applications that can benefit from its nice security features. As we stated before, many embedded system applications do not need secrecy\slash{}confidentiality, but strongly require code and data authenticity and integrity. 
 Using the original work with some architectural elements modified to provide stronger security features, the first LEON3 \fpga~ based implementation of \cshia was realized. This section focus on presenting our \cshia~implementation components and how they work to provide authenticity and integrity.
 
+\section{LEON3}
+
+\section{AMBA2}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/others/typica_ahb.png}
+    \caption{Typical AMBA2 system }
+    \label{fig:general}
+\end{figure}
+
+The BUS used in the LEON3 processor is the AHB high-performance system
+backbone busb able to sustain the external memory
+bandwidth, on which the CPU, on-chip memory and other Direct Memory Access
+(DMA) devices reside. This bus provides a high-bandwidth interface between the
+elements that are involved in the majority of transfers. Also located on the high-performance bus is a bridge to the lower bandwidth APB, where most of the peripheral
+devices in the system are located
+High performance
+
+AMBA AHB implements the features required for high-performance, high clock
+frequency systems including:
+\begin{itemize}
+ \item {burst transfers}
+\item {split transactions}
+\item {single-cycle bus master handover}
+\item {single-clock edge operation}
+\item {non-tristate implementation}
+\item {wider data bus configurations (64/128 bits).}
+\end{itemize}
+
+ 
+\subsection{Internal Organization}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/others/multiplex.png}
+    \caption{Overview  of the AMBA2 Organization}
+    \label{fig:internorg}
+\end{figure}
+ 
+
+
+\subsection{AMBA AHB operation}
+Before an AMBA AHB transfer can commence the bus master must be granted access
+to the bus. This process is started by the master asserting a request signal to the arbiter.
+Then the arbiter indicates when the master will be granted use of the bus.
+A granted bus master starts an AMBA AHB transfer by driving the address and control
+signals. These signals provide information on the address, direction and width of the
+transfer, as well as an indication if the transfer forms part of a burst. Two different forms
+of burst transfers are allowed:
+
+\begin{itemize}
+\item incrementing bursts, which do not wrap at address boundaries
+\item wrapping bursts, which wrap at particular address boundaries.
+\end{itemize}
+
+A write data bus is used to move data from the master to a slave, while a read data bus
+is used to move data from a slave to the master.
+Every transfer consists of:
+
+\begin{itemize}
+\item an address and control cycle
+\item one or more cycles for the data.
+\end{itemize}
+
+
+The address cannot be extended and therefore all slaves must sample the address during
+this time. The data, however, can be extended using the HREADY signal. When LOW
+this signal causes wait states to be inserted into the transfer and allows extra time for the
+slave to provide or sample data.
+During a transfer the slave shows the status using the response signals, HRESP[1:0]:
+\begin{itemize}
+
+\item  {OKAY -} The OKAY response is used to indicate that the transfer is
+progressing normally and when HREADY goes HIGH this shows
+the transfer has completed successfully.
+\item {ERROR -} The ERROR response indicates that a transfer error has occurred
+and the transfer has been unsuccessful.
+\item {RETRY and SPLIT  -} Both the RETRY and SPLIT transfer responses indicate that the
+transfer cannot complete immediately, but the bus master should
+continue to attempt the transfer.
+In normal operation a master is allowed to complete all the transfers in a particular burst
+before the arbiter grants another master access to the bus. However, in order to avoid
+excessive arbitration latencies it is possible for the arbiter to break up a burst and in such
+cases the master must re-arbitrate for the bus in order to complete the remaining
+transfers in the burst.
+\end{itemize}
+
+
+
+
+\subsection{AMBA Components}
+
+\subsubsection{Masters}
+ An AHB bus master has the most complex bus interface in an AMBA system. Typically
+an AMBA system designer would use predesigned bus masters and therefore would not
+need to be concerned with the detail of the bus master interface.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/others/master_ahb.png}
+    \caption{AHB master interface}
+    \label{fig:masterint}
+\end{figure}
+
+
+
+\subsubsection{Slaves}
+An AHB bus slave responds to transfers initiated by bus masters within the system. The
+slave uses a HSELx select signal from the decoder to determine when it should respond
+to a bus transfer. All other signals required for the transfer, such as the address and
+control information, will be generated by the bus master.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/others/slave_ahb.png}
+    \caption{AHB slave interface}
+    \label{fig:slaveint}
+\end{figure}
+ 
+
+
+
+\subsubsection{Arbiter}
+ The role of the arbiter in an AMBA system is to control which master has access to the
+bus. Every bus master has a REQUEST / GRANT interface to the arbiter and the arbiter
+uses a prioritization scheme to decide which bus master is currently the highest priority
+master requesting the bus.
+Each master also generates an HLOCKx signal which is used to indicate that the master
+requires exclusive access to the bus.
+The detail of the priority scheme is not specified and is defined for each application. It
+is acceptable for the arbiter to use other signals, either AMBA or non-AMBA, to
+influence the priority scheme that is in use.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/others/arbiter_ahb.png}
+    \caption{AHB arbiter interface}
+    \label{fig:arbiterint}
+\end{figure}
+ 
+\subsubsection{Arbitration}
+ The arbitration Process  need specific control signals described  below:
+ \begin{itemize}
+\item  {\textbf{HBUSREQx -}} The bus request signal is used by a bus master to request access to
+the bus. Each bus master has its own HBUSREQx signal to the
+arbiter and there can be up to 16 separate bus masters in any
+system.
+\item  {\textbf{HLOCKx -}} The lock signal is asserted by a master at the same time as the bus
+request signal. This indicates to the arbiter that the master is
+performing a number of indivisible transfers and the arbiter must
+not grant any other bus master access to the bus once the first
+transfer of the locked transfers has commenced. HLOCKx must
+be asserted at least a cycle before the address to which it refers, in
+order to prevent the arbiter from changing the grant signals.
+\item  {\textbf{HGRANTx -}} The grant signal is generated by the arbiter and indicates that the
+appropriate master is currently the highest priority master
+requesting the bus, taking into account locked transfers and
+SPLIT transfers.
+A master gains ownership of the address bus when HGRANTx is
+HIGH and HREADY is HIGH at the rising edge of HCLK.
+\item  {\textbf{HMASTER[3:0] -}} The arbiter indicates which master is currently granted the bus
+using the HMASTER[3:0] signals and this can be used to control
+the central address and control multiplexor. The master number is
+also required by SPLIT-capable slaves so that they can indicate to
+the arbiter which master is able to complete a SPLIT transaction.
+\item  {\textbf{HMASTLOCK -}} The arbiter indicates that the current transfer is part of a locked
+sequence by asserting the HMASTLOCK signal, which has the
+same timing as the address and control signals.
+
+\item  {\textbf{HSPLIT[15:0] -}}
+The 16-bit Split Complete bus is used by a SPLIT-capable slave to
+indicate which bus master can complete a SPLIT transaction. This
+information is needed by the arbiter so that it can grant the master
+access to the bus to complete the transfer.
+\end{itemize}
+
+An Example of a master requesting the bus control is shown in Figure \ref{fig:grantwait} where 
+the arbiter grants the access after a few waiting cycles.
+ \begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.2\textwidth]{figures/others/arbiter_grant_wait.png}
+    \caption{Granting with wait cycles}
+    \label{fig:grantwait}
+\end{figure}
+
+
+\subsubsection{Decoder}
+ The decoder in an AMBA system is used to perform a centralized address decoding
+function, which improves the portability of peripherals, by making them independent of
+the system memory map.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/others/decoder_ahb.png}
+    \caption{AHB Decoder interface}
+    \label{fig:decoder int}
+\end{figure}
+ 
+
+
+
 \section{Components of the Architecture}
 \label{sec:Components-of-the-Architecture}
-As Section \ref{subsec:integrity} discussed, the main resource to provide integrity are tags. Since \cshia~uses \puf-based keys to generate tags, we called them \puf-Tags, or \ptags~for short. \ptags~are the core of \cshia's design. They will be unique for each instance of \cshia~due to the unclonability property of \pufs. That ensures one-to-one relatioship between programs and instances, providing authenticity. To handle \ptags, three main components are added to a conventional embedded system architecture. They are: The \ptag~Memory; the Bus Handler (\handler); and the Security Engine (\seceng). Figure \ref{fig:cshia} shows this design and how components communicate between themselves. 
+As Section \ref{subsec:integrity} discussed, the main resource to provide integrity are tags. Since \cshia~uses \puf-based keys to generate tags, we called them \puf-Tags, or \ptags~for short. \ptags~are the core of \cshia's design. They will be unique for each instance of \cshia~due to the unclonability property of \pufs. That ensures one-to-one relationship between programs and instances, providing authenticity. To handle \ptags, three main components are added to a conventional embedded system architecture. They are: The \ptag~Memory; the Bus Handler (\handler); and the Security Engine (\seceng). Figure \ref{fig:cshia} shows this design and how components communicate between themselves. 
 
 \ptag~Memory is an external memory and has its own buses. This architectural decision gives freedom to designers that can choose bus width, frequency, address space, etc. Because the processor is not aware of any additional component of \cshia, \handler~intercepts data transfers between processor and memory in order to provide them to \seceng~that generates tags. \handler~can also request data ( on behalf of the processor) to main memory so as  form complete memory blocks that are necessary to generate \ptags.
 
-\seceng~has three major subcomponents. The main one is the \ptag~Generator (\ptaggen), which uses input data whose length is equal to a memory block concatenated with its address to generate \ptags. The \fuzzy~is only used when the system loses its secret key. For instance, after a power cycle. Thus, when the system is powered on, the \fuzzy~will extract the \puf-based key and provide it to \ptaggen. Finally, we have the \ptag~Memory Management Unit (\pmmu). The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~and also to decode internal addresses of \ptags~to physical addresses of \ptagmem. In addition to that, \pmmu~can have two distinct designs. If a designer chooses to use timestamps as solution for replay attacks, \pmmu~will have an internal memory to store and control timestamps of the memory blocks. However, if the solution for replay attacks is a \mt\cite{Elbaz2009}, \pmmu~will control verification and update of the tree, as well as it will have a cache memory, the \ptagcache, to speed up these tasks.
+\seceng~has three major sub-components. The main one is the \ptag~Generator (\ptaggen), which uses input data whose length is equal to a memory block concatenated with its address to generate \ptags. The \fuzzy~is only used when the system loses its secret key. For instance, after a power cycle. Thus, when the system is powered on, the \fuzzy~will extract the \puf-based key and provide it to \ptaggen. Finally, we have the \ptag~Memory Management Unit (\pmmu). The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~and also to decode internal addresses of \ptags~to physical addresses of \ptagmem. In addition to that, \pmmu~can have two distinct designs. If a designer chooses to use timestamps as solution for replay attacks, \pmmu~will have an internal memory to store and control timestamps of the memory blocks. However, if the solution for replay attacks is a \mt\cite{Elbaz2009}, \pmmu~will control verification and update of the tree, as well as it will have a cache memory, the \ptagcache, to speed up these tasks.
 
 
 %\subsection{Bus Handler (\handler)}
@@ -178,15 +374,15 @@ following state description:
 
  \item{\textbf{WRITE LINE}}
  
- Once the line is dirty and need to be written in the main memory, a counter is  starded, similar to the read process 
+ Once the line is dirty and need to be written in the main memory, a counter is  started, similar to the read process 
  but it now counts each time the write request is confirmed by the bus, when all words were written  the line sirty status 
  is now changed to not dirty and the system goes to IDLE. In the process of writing the line to memory, in parallel a request is made 
- to the security engine to calculated the new PTAG related tohis line and store it in the PTAG memory.
+ to the security engine to calculated the new PTAG related to its line and store it in the PTAG memory.
 
  \item{\textbf{SERVE LEON}}
 
  On this state  all LEON requests  read or write are executed, if the content needed is  in the line. 
- when any operetaion requires a word  that is not in the local line buffer then the system  goes back to IDLE state.
+ when any operation requires a word  that is not in the local line buffer then the system  goes back to IDLE state.
  
  
  \item{\textbf{UNSAFE}}
@@ -199,7 +395,7 @@ When a security check fails  on the IDLE state the system uses this as a trap st
 
 
 
-\subsubsection{Operation}
+\subsubsection{Bus Operations}
 
 \begin{subsubsection}{Requesting Grant}
 \label{op:grant}
@@ -244,8 +440,8 @@ When a security check fails  on the IDLE state the system uses this as a trap st
 %======================================================
 \subsection{Security Engine}
 
-This block is responsable for the interface with the external memory wich stores the physical tags values
-for each sets of challenges, and for calculatng this values using one or more PUFs, the PUF description is in section XX.
+This block is responsible for the interface with the external memory which stores the physical tags values
+for each sets of challenges, and for calculating this values using one or more \pufs~, the \puf~ description is in Section \ref{subsec:Enrollment-Phase}.
 
 
 \begin{figure*}[!ht]
@@ -290,7 +486,7 @@ ptag\_mresp\_in & in              & ptag\_mresp\_type 	 & ptag memory  response 
 
 
 The functional operation of this block consists in two basic actions, given a challenge
-calulate the PTAG  using the internal PUF  and if this is a check operation the compare
+calculate the PTAG  using the internal PUF  and if this is a check operation the compare
  the calculated value with the equivalent from the PTAG memory, if its a write operations
  than just store the calculated value in the PTAG memory.the state machine needed to complete
  this task is described bellow.
@@ -298,7 +494,7 @@ calulate the PTAG  using the internal PUF  and if this is a check operation the 
 \begin{itemize}
   \item{\textbf{IDLE}}
  
-The security engine stays in  IDLe  until a valid challenge is siganlized, then the input is 
+The security engine stays in  IDLe  until a valid challenge is signalized, then the input is 
 registered and a request for the PUF is sent to calculate tha PTAG , as well as read operation 
  to the PTAG memory  in case of a check operation.
  

@@ -18,15 +18,12 @@ This \puf~ is composed by a set of arbiter switches and  one arbiter, the latch,
 
 Another \puf~ type is the Static Random-Access Memory (SRAM) \puf~ \cite{Leest2012}, in this model each SRAM cell within an SRAM block can be considered a \puf~. The typical cell implementation, show in Figure \ref{fig:spufexample} is built from two cross-coupled inverters at its core,from an electronic viewpoint, this circuit contains a positive feedback loop which reinforces its current state. In a logic sense, this circuit has two stable values (bistable), and by residing in one of both states the cell stores one binary digit.
 
-The operation principle of an SRAM PUF is based on the transient behavior of an SRAM cell when it is powered up, i.e. when its supply voltage Vdd comes up. The circuit will evolve to one of its operating points, but it is not immediately
-clear to which one. In Figure   \ref{fig:spufexample} the inverters $I_1$ and $I_2$ have its drive strength determined by the process variations when this memory was manufactured, this inverters will compete to achieve stability.
-When one of the inverters is significantly stronger than the other one, the preferred initial operating point will be a stable state and the preference will be very distinct, i.e. such a cell will always power-up in the same stable state,
-but which state this is (‘0’ or ‘1’), is randomly determined for every cell.
-
+The operation principle of an SRAM PUF is based on the transient behavior of an SRAM cell when it is powered up, i.e. when its supply voltage Vdd comes up. The circuit will evolve to one of its operating points, but it is not immediately clear to which one. In Figure   \ref{fig:spufexample} the inverters $I_1$ and $I_2$ have its drive strength determined by the process variations when this memory was manufactured, this inverters will compete to achieve stability. When one of the inverters is significantly stronger than the other one, the preferred initial operating point will be a stable state and the preference will be very distinct, i.e. such a cell will always power-up in the same stable state, but which state this is (‘0’ or ‘1’), is randomly determined for every cell.
+So in a \puf~ that uses an SRAM, the challenge is the row and column ,the output is the state of the cell after power up.
 \begin{figure*}[!ht]
 	\centering
-% 	\includegraphics[scale=0.45]{cshia}
-	\includegraphics[width=\textwidth]{figures/pdf/spuf}
+	\includegraphics[scale=0.55]{figures/pdf/spuf}
+% 	\includegraphics[width=\textwidth]{figures/pdf/spuf}
 	\caption{A simplistic example of a SRAM \puf~ , showing the SRAM cell logic circuit inside an SRAM block.}
 %	\vspace*{-9pt} 
 	\label{fig:spufexample}
