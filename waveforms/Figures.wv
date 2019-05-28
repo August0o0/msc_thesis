@@ -1,0 +1,144 @@
+
+Figure 4.7  granting with wait cycles
+{signal: [
+  {},
+  {name: 'HCLK',         wave: 'P.|......'                    },
+  {name: 'HBUSREQx',     wave: '01|......'                    },
+  {name: 'HGRANTx',      wave: '0.|1.....'                    },
+  {name: 'HMASTER[3:0]', wave: 'x.|..2...', data: ['#1']      },
+  {name: 'HADDR[31:0]',  wave: 'x.|..2.2.', data: ['A', 'A+4']},
+  {name: 'HWDATA[31:0]', wave: 'x.|....2.', data: ['Data(A)' ]},
+  {name: 'HREADY',       wave: 'x.|010101'                    }
+],
+ head:{
+   tick:0,
+ },
+ "config" : { "hscale" : 2 }
+}
+
+
+Figure 4.11 Requesting grant with no wait states
+{signal: [
+  {},
+  {name: 'HCLK',         wave: 'P.|....'                    			},
+  {name: 'HBUSREQx',     wave: '01|....'                    			},
+  {name: 'HGRANTx',      wave: '0.|1...'                    			},
+  {name: 'HMASTER[3:0]', wave: 'x.|.2..', data: ['#1']      			},
+  {name: 'HADDR[31:0]',  wave: 'x.|.222', data: ['A', 'A+4','A+8']		},
+  {name: 'HWDATA[31:0]', wave: 'x.|..22', data: ['Data(A)','Data(A+4)' ]},
+  {name: 'HREADY',       wave: '0.|1...'                    			}
+],
+ head:{
+   tick:0,
+ },
+ "config" : { "hscale" : 2 }
+}
+
+
+Figure 4.12 Requesting grant with wait states
+{signal: [
+  {},
+  {name: 'HCLK',         wave: 'P.|.......'                    				},
+  {name: 'HBUSREQx',     wave: '01|.......'                    				},
+  {name: 'HGRANTx',      wave: '0.|1......'                    				},
+  {name: 'HMASTER[3:0]', wave: 'x.|..2....', data: ['#1']      				},
+  {name: 'HADDR[31:0]',  wave: 'x.|..2.2.2', data: ['A', 'A+4', 'A+8']		},
+  {name: 'HWDATA[31:0]', wave: 'x.|....2.2', data: ['Data(A)', 'Data(A+4)' ]},
+  {name: 'HREADY',       wave: 'x.|0101010'                    				}
+],
+ head:{
+   tick:0,
+ },
+ "config" : { "hscale" : 2 }
+}
+
+
+Figure 4.13 Burst transfer with undefined lengths read and write
+{signal: [
+  {},
+  {name: 'HCLK',          wave: 'P........'                    				},
+  {name: 'HTRANS[1:0]',   wave: 'x2222.22x', data: ['NONSEQ', 'SEQ', 'NONSEQ', 'SEQ', 'SEQ']								 },
+  {name: 'HADDR[31:0]',   wave: 'x2222.22x', data: ['0x20', '0x22', '0x5c', '0x60', '0x64']									 },
+  {name: 'HBURST[2:0]',   wave: 'x2.2...2x', data: ['INCR', 'INCR']															 },
+  {name: 'CTRL_SIGNALS',  wave: 'x2.2...2x', data: ['SIZE=Halfword', 'SIZE=word']											 },
+  {name: 'HWDATA[31:0]',  wave: 'x2222.22x', data: ['','Data(0x20)', 'Data(0x22)', 'Data(0x5C)', 'Data(0x60)', 'Data(0x64)' ]},
+  {name: 'HREADY',        wave: 'x1110111x'                    				},
+  {name: 'HRDATA[31:0]',  wave: 'x222x222x', data: ['','Data(0x20)', 'Data(0x22)', 'Data(0x5C)', 'Data(0x60)', 'Data(0x64)' ]}
+],
+ head:{
+   tick:0,
+ },
+ "config" : { "hscale" : 2 }
+}
+
+
+Figure PTAG READ
+{signal: [
+  {},
+  {name: 'HCLK',          		wave: 'P..|...'                    								},
+  {name: 'PTAG_SREQ_IN.DATA',   wave: 'x2x|...', data: ['LINE']									},
+  {name: 'PTAG_SREQ_IN.VALID',  wave: '010|...'													},
+  {name: 'PTAG_READY',   		wave: '0..|10.'													},
+  {name: 'LINE_SECURE',  		wave: '0..|..1'													},
+  {name: 'STATE',  				wave: '2.2..22', data: ['IDLE','CALCULATE', 'VALIDATE', 'IDLE' ]}
+],
+ head:{
+   tick:0,
+ },
+ "config" : { "hscale" : 2 }
+}
+
+
+Figure READ PTAG TREE
+{signal: [
+  {},
+  {name: 'HCLK',          		wave: 'P..|..|...'                    								  },
+  {name: 'PTAG_SREQ_IN.DATA',   wave: 'x2x|..|...', data: ['LINE']									  },
+  {name: 'PTAG_SREQ_IN.VALID',  wave: '010|..|...'													  },
+  {name: 'PTAG_READY',   		wave: '0..|10|...'													  },
+  {name: 'TREE_VERIFIED',  		wave: '0..|..|10.'													  },
+  {name: 'LINE_SECURE',  		wave: '0..|..|.1.'													  },
+  {name: 'STATE',  				wave: '2.2..2..22', data: ['IDLE','CALCULATE', 'WAIT TREE', 'VALIDATE', 'IDLE' ]}
+],
+ head:{
+   tick:0,
+ },
+ "config" : { "hscale" : 2 }
+}
+
+
+Figure PTAG WRITE
+{signal: [
+  {},
+  {name: 'HCLK',          		wave: 'P..|...'                    								},
+  {name: 'PTAG_SREQ_IN.DATA',   wave: 'x2x|...', data: ['LINE']									},
+  {name: 'PTAG_SREQ_IN.VALID',  wave: '010|...'													},
+  {name: 'PTAG_SREQ_IN.WRITE',  wave: '010|...'													},
+  {name: 'PTAG_READY',   		wave: '0..|10.'													},
+  {name: 'LINE_SECURE',  		wave: '0..|..1'													},
+  {name: 'STATE',  				wave: '2.2..22', data: ['IDLE','CALCULATE', 'WRITE_PTAG', 'IDLE' ]}
+],
+ head:{
+   tick:0,
+ },
+ "config" : { "hscale" : 3 }
+}
+
+
+Figure WRITE PTAG TREE
+{signal: [
+  {},
+  {name: 'HCLK',          		wave: 'P..|..|..'                    								  },
+  {name: 'PTAG_SREQ_IN.DATA',   wave: 'x2x|..|..', data: ['LINE']									  },
+  {name: 'PTAG_SREQ_IN.VALID',  wave: '010|..|..'													  },
+  {name: 'PTAG_SREQ_IN.WRITE',  wave: '010|..|..'													  },
+  {name: 'PTAG_READY',   		wave: '0..|10|..'													  },
+  {name: 'TREE_VERIFIED',  		wave: '0..|..|10'													  },
+  {name: 'LINE_SECURE',  		wave: '0..|..|.1'													  },
+  {name: 'STATE',  				wave: '2.2..2..2', data: ['IDLE','CALCULATE', 'WRITE ON_TREE', 'IDLE' ]}
+],
+ head:{
+   tick:0,
+ },
+ "config" : { "hscale" : 2 }
+}
