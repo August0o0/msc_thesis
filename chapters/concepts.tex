@@ -5,7 +5,7 @@ It is well known that every time an Integrated circuit(IC) is fabricated there a
 
 \subsection{\puf~ Types}
 It is possible to explore IC process variations in several ways\cite{DBLP:phdbasesearchMaes12}, a good and simple example to understand the behavior of this functions is an arbiter PUF, pictured in Figure \ref{fig:arbiterpuf}.
-This \puf~ is composed by a set of arbiter switches and  one arbiter, the latch, the idea behind this construction is to build two paths with the same layout length and compute the relative delay between this two paths given a challenge $X$ of size $N$.  For every arbiter $n$, if $X[i]$  is one both paths will pass through the arbiter, if its zero the inputs will be switched in the output  changing the delay of booth paths. To evaluate the output(Y) the challenge $X$ and a rising signal is provided to both paths, $Y$ is one if the signal to the latch data input (D) is faster, and zero otherwise. To get a response of size $Z$, this \puf~ construction  can be instantiated $Z$ times.
+This \puf~ is composed by a set of arbiter switches and  one arbiter, the latch, the idea behind this construction is to build two paths with the same layout length and compute the relative delay between this two paths given a challenge $X$ of size $N$.  For every arbiter $n$, if $X[i]$  is one both paths will pass through the arbiter, if its zero the inputs will be switched in the output  changing the delay of booth paths. To evaluate the output(Y), the challenge $X$ and a rising signal is provided to both paths, $Y$ is one if the signal to the latch data input (D) is faster, and zero otherwise. To get a response of size $Z$, this \puf~ construction  can be instantiated $Z$ times.
 
 \begin{figure*}[!ht]
 	\centering

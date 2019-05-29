@@ -64,23 +64,21 @@ Using the original work with some architectural elements modified to provide str
         \item Security Engine (\seceng) 
     \end{itemize}
     \item One external memory that contains instructions and data;
-    \item One interconnection bus using AMBA2.
+    \item One interconnection bus using \amba.
 \end{itemize} 
 
-\section{LEON3}
 
-\section{AMBA2}
-\begin{figure}[ht]
+\section{\amba}
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=1\textwidth]{figures/pdf/}
-    \caption{Typical AMBA2 system , with a CPU , DMA and other low bandwidth peripherals }
+    \includegraphics[width=1\textwidth]{figures/pdf/typical_amba_new.pdf}
+    \caption{Typical \amba~ system , with a CPU , DMA and other low bandwidth peripherals. }
     \label{fig:general}
 \end{figure}
 
-The BUS used in the LEON3 processor is the Advanced High-performance Bus (AHB), where on-chip memory and other Direct Memory Access (DMA) devices also reside. This bus provides a high-bandwidth interface between the elements that are involved in the majority of transfers. Also located on the high-performance bus is a bridge to the lower bandwidth APB, where most of the peripheral devices in the system are located. Figure \ref{fig:general} exemplify a traditional AHB utilization.
+The BUS used in the LEON3 processor is the Advanced High-performance Bus (AHB), where on-chip memory and other peripherals also reside. This bus provides a high-bandwidth interface between the elements connected it, also, located on bus is a bridge to the lower bandwidth APB, where most of the peripheral devices in the system are located. Figure \ref{fig:general} exemplify a traditional AHB utilization.
 
-
-AMBA AHB implements the features required for high-performance, high clock
+\amba~ AHB implements the features required for high-performance, high clock
 frequency systems including:
 \begin{itemize}
  \item {burst transfers}
@@ -91,24 +89,25 @@ frequency systems including:
 \end{itemize}
 
  
-\subsection{AMBA AHB operation}
+\subsection{\amba~ AHB operation}
 
-\begin{figure}[ht]
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/others/multiplex.png}
-    \caption{Overview  of the AMBA2 Organization, with the arbiters masters and slaves distribution}
+    \includegraphics[width=0.7\textwidth]{figures/pdf/amba2_arbiter.pdf}
+    \caption{Overview  of the \amba~ Organization, with the arbiters masters and slaves distribution.}
     \label{fig:internorg}
 \end{figure}
-The previously described AMBA components are seen by the bus as masters and slaves, as depicted in Figure \ref{fig:internorg}, where, for instance, the CPU is an AMBA master and on-chip RAM is a slave. Who decides the priorities and decode all access  is the AMBA arbiter, which will be described further.
 
-Before an AMBA AHB transfer can commence the bus master must be granted access to the bus. This process is started by the master asserting a request signal to the arbiter. Then the arbiter indicates when the master will be granted use of the bus. A granted bus master starts an AMBA AHB transfer by driving the address and control signals. These signals provide information on the address, direction and width of the transfer, as well as an indication if the transfer forms part of a burst. Two different forms of burst transfers are allowed:
+The previously described \amba~ components are seen by the bus as masters and slaves, as depicted in Figure \ref{fig:internorg}, where, for instance, the CPU is an \amba~ master and the on-chip RAM is a slave. Who decides the priorities and decode all access  is the \amba~ arbiter, which will be described further.
+
+Before an \amba~ AHB transfer, from now on just referred as transfer, can commence the bus master must be granted access to the bus. This process is started by the master asserting a request signal to the arbiter. Then the arbiter indicates when the master will be granted use of the bus. A granted bus master starts a transfer by driving the address and control signals. These signals provide information on the address, direction and width of the transfer, as well as an indication if the transfer forms part of a burst. Two different forms of burst transfers are allowed:
 \begin{itemize}
 \item incremental bursts, which do not wrap at address boundaries
 \item wrapping bursts, which wrap at particular address boundaries.
 \end{itemize}
 
-A write data bus is used to move data from the master to a slave, while a read data bus
-is used to move data from a slave to the master.
+A write data bus is used to move data from an master to a slave, while a read data bus
+is used to move data from a slave to an master.
 Every transfer consists of:
 
 \begin{itemize}
@@ -116,7 +115,7 @@ Every transfer consists of:
 \item one or more cycles for the data.
 \end{itemize}
 
-\begin{figure}[ht]
+\begin{figure}[!ht]
     \centering
     \includegraphics[width=0.4\textwidth]{figures/others/simple_ahb_transfer.png}
     \caption{AHB basic transfer with one cycle for address and control and one or many for data.}
@@ -124,7 +123,8 @@ Every transfer consists of:
 \end{figure}
 
 
-The address cannot be extended and therefore all slaves must sample the address during this time. The data, however, can be extended using the HREADY signal. When LOW this signal causes wait states to be inserted into the transfer and allows extra time for the slave to provide or sample data, as can be seen in Figure \ref{fig:basic_ahb_transfer}. During a transfer the slave shows the status using the response signals, HRESP[1:0]:
+Ina the address and control cycle ,the address cannot be extended and therefore all slaves must sample the address during this time. The data, however, can be extended using the HREADY signal. When LOW this signal causes wait states to be inserted into the transfer and allows extra time for the slave to provide or sample data, as can be seen in Figure \ref{fig:basic_ahb_transfer}. During a transfer the slave shows the status using the HRESP response signal, the following values can be used:
+
 \begin{itemize}
 
 \item  {OKAY -} The OKAY response is used to indicate that the transfer is progressing normally and when HREADY goes HIGH this shows the transfer has completed successfully.
@@ -133,79 +133,87 @@ The address cannot be extended and therefore all slaves must sample the address 
 \end{itemize}
 
 
-\subsection{AMBA Components}
-\augusto{say that we are reducing the scope to what was used in the design }
-This AMBA2 components are a  subset of the entire AMBA2 features, the focus of this sections is to provide the basic to understand the \cshia~implementation , for a full reference please check \cite{ARMAMBA2}.
+\subsection{\amba~ Components}
+%\augusto{say that we are reducing the scope to what was used in the design }
+This \amba~ components are a  subset of the entire \amba~ features, the focus of this sections is to provide the basic to understand of the signals and work required for the \cshia~implementation , for a full reference please check \cite{ARMAMBA2}.
 
 \subsubsection{Masters}
-\begin{figure}[ht]
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/others/master_ahb.png}
-    \caption{AHB master interface}
+    \includegraphics[width=0.7\textwidth]{figures/pdf/ahb_master_new.pdf}
+    \caption{AHB master interface, with control and data signals. The HREQ and HGRANT signals  will be used take control over the bus.}
     \label{fig:masterint}
 \end{figure}
 
- An AHB bus master has the most complex bus interface in an AMBA system , its interfaces are depicted in Figure \ref{fig:masterint}. Typically an AMBA system designer would use predesigned bus masters and therefore would not need to be concerned with the detail of the bus master interface.
+ An AHB bus master has the most complex bus interface in an \amba~ system , its interfaces are depicted in Figure \ref{fig:masterint}. The master contains one direct interface with the arbiter to receive  and request the bus grant, a group of control signals to control the transfers flow and duration and to interfaces for read and write data.  Typically an \amba~ system designer would use predesigned bus masters and therefore would not need to be concerned with the detail of the bus master interface.
 
 
 
 \subsubsection{Slaves}
 
-\begin{figure}[ht]
+\begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/others/slave_ahb.png}
-    \caption{AHB slave interface}
+    \includegraphics[width=0.7\textwidth]{figures/pdf/ahb_slave_new.pdf}
+    \caption{AHB slave interface, where the HSEL signal will indicate when to start transfers.}
     \label{fig:slaveint}
 \end{figure}
-An AHB bus slave(\ref{fig:slaveint}) responds to transfers initiated by bus masters within the system. The slave uses a HSELx select signal from the decoder to determine when it should respond to a bus transfer. All other signals required for the transfer, such as the address and control information, will be generated by the bus master.
+An AHB bus slave, as depicted in Figure \ref{fig:slaveint}, uses almost the same signals as the master, the difference is that the slave never controls the bus, so,  the interface with the arbiter is basically being selected as active and respond to transfers initiated by bus masters within the system. The slave uses a HSEL select signal from the decoder to determine when it should respond to a bus transfer. All other signals required for the transfer, such as the address and control information, will be generated by the bus master.
  
 \subsubsection{Arbiter}
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/others/arbiter_ahb.png}
-    \caption{AHB arbiter interface}
+    \includegraphics[width=0.7\textwidth]{figures/pdf/ahb_arbiter_new.pdf}
+    \caption{AHB arbiter interface with one HGRANT and one HREQ for each master.}
     \label{fig:arbiterint}
 \end{figure}
- The role of the arbiter in an AMBA system is to control which master has access to the bus. As can be seen in Figure \ref{fig:arbiterint} every bus master has a REQUEST / GRANT interface to the arbiter and the arbiter uses a prioritization scheme to decide which bus master is currently the highest priority master requesting the bus. Each master also generates an HLOCKx signal which is used to indicate that the master requires exclusive access to the bus. The detail of the priority scheme is not specified and is defined for each application. It is acceptable for the arbiter to use other signals, either AMBA or non-AMBA, to influence the priority scheme that is in use.
 
+ The role of the arbiter in an \amba~ system is to control which master has access to the bus. As can be seen in Figure \ref{fig:arbiterint} every bus master has a REQUEST / GRANT interface to the arbiter and the arbiter uses a prioritization scheme to decide which bus master is currently the highest priority master requesting the bus. The detail of the priority scheme is not specified and is defined for each application. It is acceptable for the arbiter to use other signals, either \amba~ or non-\amba~, to influence the priority scheme that is in use.
+ The address and control signals are used by  the arbiter to route the HWDATA and the HADDR from the granted master to the selected slave as illustrated in Figure     \ref{fig:internorg}.
  
-\subsubsection{Arbitration}
- The arbitration Process  need specific control signals described  below:
+ 
+ \subsubsection{Arbitration}
+ 
+ The arbitration Process  need specific control signals, despite the ones described below, two more signals are used  in the \amba~ system, HLOCK and HSPLIT,  the first to indicate that the master wants exclusive access to the bus, the second to restart transactions when they  interrupted.
+ 
  \begin{itemize}
-\item  {\textbf{HBUSREQx -}} The bus request signal is used by a bus master to request access to the bus. Each bus master has its own HBUSREQx signal to the arbiter and there can be up to 16 separate bus masters in any system.
-\item  {\textbf{HLOCKx -}} The lock signal is asserted by a master at the same time as the bus request signal. This indicates to the arbiter that the master is performing a number of indivisible transfers and the arbiter must not grant any other bus master access to the bus once the first transfer of the locked transfers has commenced. HLOCKx must be asserted at least a cycle before the address to which it refers, in order to prevent the arbiter from changing the grant signals.
-\item  {\textbf{HGRANTx -}} The grant signal is generated by the arbiter and indicates that the appropriate master is currently the highest priority master requesting the bus, taking into account locked transfers and SPLIT transfers.
-A master gains ownership of the address bus when HGRANTx is HIGH and HREADY is HIGH at the rising edge of HCLK.
-\item  {\textbf{HMASTER[3:0] -}} The arbiter indicates which master is currently granted the bus using the HMASTER[3:0] signals and this can be used to control the central address and control multiplexor. The master number is also required by SPLIT-capable slaves so that they can indicate to the arbiter which master is able to complete a SPLIT transaction.
-\item  {\textbf{HMASTLOCK -}} The arbiter indicates that the current transfer is part of a locked sequence by asserting the HMASTLOCK signal, which has the same timing as the address and control signals.
 
-\item  {\textbf{HSPLIT[15:0] -}} The 16-bit Split Complete bus is used by a SPLIT-capable slave to indicate which bus master can complete a SPLIT transaction. This information is needed by the arbiter so that it can grant the master access to the bus to complete the transfer.
+\item  {HBUSREQ} The bus request signal is used by a bus master to request access to the bus. Each bus master has its own HBUSREQ signal to the arbiter and there can be up to 16 separate bus masters in any system.
+
+%\item  {\textbf{HLOCKx -}} The lock signal is asserted by a master at the same time as the bus request signal. This indicates to the arbiter that the master is performing a number of indivisible transfers and the arbiter must not grant any other bus master access to the bus once the first transfer of the locked transfers has commenced. HLOCKx must be asserted at least a cycle before the address to which it refers, in order to prevent the arbiter from changing the grant signals.
+
+\item  {HGRANT} The grant signal is generated by the arbiter and indicates that the appropriate master is currently the highest priority master requesting the bus, taking into account locked transfers and SPLIT transfers. A master gains ownership of the address bus when HGRANT is HIGH and HREADY is HIGH at the rising edge of HCLK.
+
+\item  {HMASTER} The arbiter indicates which master is currently granted using the HMASTER signal and,  this same  signal can be used to control the central address and control multiplexer, automatically routing the correct HDATA and control signals to the correct slave. The master number is also required by SPLIT-capable slaves so that they can indicate to the arbiter which master is able to complete a SPLIT transaction.
+
+%\item  {\textbf{HMASTLOCK -}} The arbiter indicates that the current transfer is part of a locked sequence by asserting the HMASTLOCK signal, which has the same timing as the address and control signals.
+
+%\item  {\textbf{HSPLIT[15:0] -}} The 16-bit Split Complete bus is used by a SPLIT-capable slave to indicate which bus master can complete a SPLIT transaction. This information is needed by the arbiter so that it can grant the master access to the bus to complete the transfer.
 \end{itemize}
 
-An Example of a master requesting the bus control is shown in Figure \ref{fig:grantwait} where the arbiter grants the access after a few waiting cycles.
- \begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{figures/others/arbiter_grant_wait.png}
-    \caption{Granting with wait cycles}
-    \label{fig:grantwait}
-\end{figure}
+An Example of a master requesting the bus control is shown in Figure \ref{fig:gnwsm} where the arbiter grants the access after a few waiting cycles.
+%  \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/read_grant_wc_new.JPG}
+%     \caption{Granting with wait cycles}
+%     \label{fig:grantwait}
+% \end{figure}
 
 
 \subsubsection{Decoder}
+
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/others/decoder_ahb.png}
+    \includegraphics[width=0.6\textwidth]{figures/pdf/ahb_decoder_new.pdf}
     \caption{AHB Decoder interface}
     \label{fig:decoder int}
 \end{figure}
- The decoder in an AMBA system is used to perform a centralized address decoding function, which improves the portability of peripherals, by making them independent of the system memory map.
+ The decoder in an \amba~ system is used to perform a centralized address decoding function, which improves the portability of peripherals, by making them independent of the system memory map. The Idea is that the  decoder will snoop the address and select with slave will respond to the transaction, also, as shown in figure \ref{fig:internorg} the decoder will indirectly control a demultiplexer  that will route the signals from the correct slave to the granted master.
 
  
 
-
-
 \section{\cshia~Components}
 \label{sec:Components-of-the-Architecture}
+
 As Section \ref{subsec:integrity} discussed, the main resource to provide integrity are tags. Since \cshia~uses \puf-based keys to generate tags, we called them \puf-Tags, or \ptags~for short. \ptags~are the core of \cshia's design. They will be unique for each instance of \cshia~due to the unclonability property of \pufs. That ensures one-to-one relationship between programs and instances, providing authenticity. To handle \ptags, three main components are added to a conventional embedded system architecture. They are: The \ptag~Memory; the Bus Handler (\handler); and the Security Engine (\seceng). Figure \ref{fig:cshia} shows this design and how components communicate between themselves. 
 
 \ptag~Memory is an external memory and has its own buses. This architectural decision gives freedom to designers that can choose bus width, frequency, address space, etc. Because the processor is not aware of any additional component of \cshia, \handler~intercepts data transfers between processor and memory in order to provide them to \seceng~that generates tags. \handler~can also request data ( on behalf of the processor) to main memory so as  form complete memory blocks that are necessary to generate \ptags.
@@ -214,14 +222,11 @@ As Section \ref{subsec:integrity} discussed, the main resource to provide integr
 
 
 %======================================================
-%Security Handler
+%Bus Handler
 %======================================================
 \subsection{Bus Handler (\handler)}
-This block has three main functions, monitoring the processor requests and respond then when necessary, 
-assemble a line %explain better what line means
-that can be multiple cache lines or any other combination necessary to be in the format
- of the security engine input  and prevent the processor the execute unsafe or unverified instructions
- as well as don't let  it  write in the bus any unsafe operation.
+To implement the \cshia~ architecture, all the security operations described in \ref{sec:opmodes} will be performed using a set of words, ideally an entire cache line that the processor might request but that can be multiple cache lines or any other combination necessary to be in the format of the \seceng~ input, this set of words required to calculate the \ptags~ from now on will be referred as \sline.  The \handler~ has three main functions, monitoring the processor request and respond it when necessary, assemble a \sline~  and prevent the processor the execute unsafe or unverified instructions  as well as don't let  it  write in the bus any unsafe operation. In this context any instruction or data requested written by the processor that was not verified by the \seceng~ is considered unsafe.
+
 %======================================================
 %Block Diagram
 %======================================================
@@ -230,7 +235,7 @@ that can be multiple cache lines or any other combination necessary to be in the
 \begin{figure*}[!ht]
 	\centering
 	\includegraphics[scale=0.35]{bus_handler}
-    \caption{Bus Handler  black box  }
+    \caption{Bus Handler  interface }
 %	\vspace*{-9pt} 
 	\label{fig:bhbb}
 \end{figure*}
@@ -242,9 +247,9 @@ that can be multiple cache lines or any other combination necessary to be in the
 \subsubsection{Signal Description}
 
 The inputs and outputs of this block can be split in three interfaces and control being
-the signals  ahbo\_in and ahbi\_out the interface with the LEON3 processor,  ahbo\_out  and ahbi\_in
+the signals  ahbo\_in and ahbi\_out the interface with the processor,  ahbo\_out  and ahbi\_in
 the interface with the bus , ptag\_sval\_in and ptag\_sreq\_out with the security engine  and control
- the signals clk ,reset\_n and bypass\_in.
+ the signals clk ,rstn and bypass\_in.
  The description of each type can be found in the Appendix \ref{ap:signals}.
 \begin{table}[H]
 \centering
@@ -253,13 +258,18 @@ the interface with the bus , ptag\_sval\_in and ptag\_sreq\_out with the securit
 \textbf{Port}   & \textbf{in/out} & \textbf{Type}        & \textbf{Description} 	\\ \hline \hline
 clk             & in              & std\_ulogic          & system clock         	\\ \hline
 rstn            & in              & std\_logic           & negated rset         	\\ \hline
-bypass\_in      & out             & std\_logic           & bypass input         	\\ \hline
 ptag\_sreq\_out & out             & ptag\_sec\_req\_type & security check request    	\\ \hline
 ptag\_sval\_in  & in              & ptag\_sec\_val\_type & security check response  	\\ \hline
 ahbi\_in        & in              & ahb\_mst\_in\_type   & AHB input from bus      	\\ \hline
 ahbi\_out       & out             & ahb\_mst\_in\_type   & AHB output to processor      \\ \hline
 ahbo\_in        & in              & ahb\_mst\_out\_type  & AHB input from processor    \\ \hline
 ahbo\_out       & out             & ahb\_mst\_out\_type  & AHB output to BUS            \\ \hline
+std\_logic         
+bypass\_in      & out             & std\_logic           & bypass input         	\\ \hline
+log\_in         & in              & std\_logic           & AHB output to BUS            \\ \hline
+ahbo\_out       & out             & std\_logic           & AHB output to BUS            \\ \hline
+ahbo\_out       & out             & ahb\_mst\_out\_type  & AHB output to BUS            \\ \hline
+
 \end{tabular}
  \caption{Ports of the security handler}
 \end{table}
@@ -273,7 +283,7 @@ ahbo\_out       & out             & ahb\_mst\_out\_type  & AHB output to BUS    
 
 \begin{figure*}[!ht]
 	\centering
-	\includegraphics[scale=0.25]{figures/pdf/state_machine_force.pdf}
+	\includegraphics[scale=0.25]{figures/pdf/sec_hand_state_machine.pdf}
     \caption{Bus Handler state machine  }
 %	\vspace*{-9pt} 
 	\label{fig:phsm}
@@ -292,18 +302,38 @@ following state description:
  going to UNSAFE state.
  
   \item{\textbf{READ GRANT}}
-  
+    \begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/read_grant_no_wait_new.JPG}
+    \caption{Requesting grant with no wait states  }
+    \label{fig:gnwsm}
+\end{figure}
+
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/read_grant_ec_new_exended.JPG}
+    \caption{Requesting grant with wait states  }
+    \label{fig:gwsm}
+\end{figure}
+
   This state is required for any transaction in the bus, it requests the bus grant for the arbiter prior to 
   begin the request, once the arbiter gives the grant the line status is checked and if the line is dirty( the processor
   update any value in the line) then it needs to be written in the memory before loading a new line, if this is the case
    then the system goes to WRITE LINE state, if no changes were made in the line then a new line is loaded in the READ LINE 
-   state. The steps needed to acquire the bus grant are shown in section \ref{op:grant}.
+   state. \augusto{describe Figures \ref{fig:gnwsm}  and \ref{fig:gwsm}}.
   
   \item{\textbf{READ LINE}}
   
-  
+    \begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/basic_transfer_w_ctrl_new.JPG}
+    \caption{burst transfer with undefined lengths read and write }
+    \label{fig:ublsm}
+\end{figure}
+
   A new line will be loaded from the main memory to the local buffer,the  steps needed to execute
-   a read or write operation is shown  in \ref{op:rw}, so a counter is started and counts the 
+   a read or write operation is shown  in \ref{fig:ublsm}, so a counter is started and counts the 
   number of words the bus provided, so when the line is loaded the line status is changed to valid and
   the system goes back to IDLE state. When  the line is ready  then a request is sent to the security engine 
   to check if the line is safe and the system will freeze until the integrity of the line is confirmed.
@@ -327,47 +357,6 @@ following state description:
 When a security check fails  on the IDLE state the system uses this as a trap state to halt.
 
 \end{itemize}
-
-
-
-
-\subsubsection{Bus Operations}
-
-\begin{subsubsection}{Requesting Grant}
-\label{op:grant}
-
-
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/others/grant_nowait.png}
-    \caption{Requesting grant with no wait states  }
-    \label{fig:gnwsm}
-\end{figure}
-
-
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/others/grant_wait.png}
-    \caption{Requesting grant with wait states  }
-    \label{fig:gwsm}
-\end{figure}
-\end{subsubsection}
-
-\begin{subsubsection}{Read and Write BUS Operations}
-\label{op:rw}
-
-
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\textwidth]{figures/others/undef_burst_length.png}
-    \caption{burst transfer with undefined lengths read and write }
-    \label{fig:ublsm}
-\end{figure}
-
-\end{subsubsection}
-
-
-
 
 
 
@@ -454,6 +443,34 @@ registered and a request for the PUF is sent to calculate tha PTAG , as well as 
 \end{itemize}
 
 
+\augusto{extend this  section talking about teh waves }
+\subsubsection{\ptag~Read}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ptag_read_sec_eng.JPG}
+    \caption{\ptag~ read without \mt }
+    \label{fig:ptgag_rd_no_mt}
+\end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ptag_read_tree_sec_eng.JPG}
+    \caption{\ptag~ read with \mt }
+    \label{fig:ptgag_rd_mt}
+\end{figure}
+
+\subsubsection{\ptag~Write}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ptag_write_sec_eng.JPG}
+    \caption{\ptag~ write  on sec engine without \mt  }
+    \label{fig:se_pw_no_mt}
+\end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/ptag_write_tree_sec_eng.JPG}
+    \caption{\ptag~ write  on sec engine with \mt.  }
+    \label{fig:se_pw_mt}
+\end{figure}
 %===========================================================================================================================================================
 
 

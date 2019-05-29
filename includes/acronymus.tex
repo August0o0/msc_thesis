@@ -109,12 +109,8 @@
 \def\crc{CRC}
 \def\io{I\slash{}O}
 \def\ios{I\slash{}Os}
-
-\def\lorenipsunb{\textcolor{blue}{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae iaculis erat. Aliquam tristique consectetur ante, quis commodo lacus egestas in. Nullam semper elit nec eros pretium dapibus. Ut eget porta metus. Mauris rhoncus vel magna non faucibus. Ut a ornare elit. Morbi sagittis quam nec risus laoreet, tincidunt volutpat ex venenatis. Sed ultrices felis quis felis scelerisque gravida a non neque. Etiam sed nisi neque. Ut lobortis pulvinar facilisis. Vestibulum quis enim bibendum, iaculis nulla non, consequat nunc. Suspendisse sed hendrerit tortor, non maximus lorem. Ut sit amet turpis eget libero condimentum scelerisque. Quisque sed dolor metus.
-
-Cras ac tincidunt tellus. Morbi id interdum magna, a ornare justo. Praesent tincidunt tempus porta. Sed iaculis fermentum nibh non porta. Aenean mattis sapien purus, ut ornare risus ornare non. Integer sit amet neque auctor, interdum mi in, sodales sem. Pellentesque at rutrum quam, eget posuere elit. Donec nec tortor egestas, laoreet ligula sit amet, luctus felis. Proin sit amet tempor odio. Sed orci orci, gravida dignissim molestie id, fringilla nec ligula.}}
-
-\def\lorenipsuns{\textcolor{blue}{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae iaculis erat. Aliquam tristique consectetur ante, quis commodo lacus egestas in. Nullam semper elit nec eros pretium dapibus. Ut eget porta metus. Mauris rhoncus vel magna non faucibus. Ut a ornare elit. Morbi sagittis quam nec risus laoreet, tincidunt volutpat ex venenatis. Sed ultrices felis quis felis scelerisque gravida a non neque. Etiam sed nisi neque. Ut lobortis pulvinar facilisis.}}
+\def\amba{AMBA2}
+\def\sline{SEC Line}
 
 % To turn comments OFF simply comment out the \Commentstrue line
 \newif\ifComments
@@ -122,6 +118,7 @@ Cras ac tincidunt tellus. Morbi id interdum magna, a ornare justo. Praesent tinc
 
 \ifComments
 \newcommand{\chek}[1]{\textcolor{red}{Check: {#1}}}
+\newcommand{\gabi}[1]{\textcolor{purple}{Gabi: {#1}}}
 \newcommand{\augusto}[1]{\textcolor{violet}{Augusto: {#1}}}
 \newcommand{\guido}[1]{\textcolor{magenta}{Guido: {#1}}}
 \newcommand{\mario}[1]{\textcolor{olive}{Mario: {#1}}}
@@ -130,9 +127,10 @@ Cras ac tincidunt tellus. Morbi id interdum magna, a ornare justo. Praesent tinc
 \newcommand{\ed}[1]{\textcolor{red}{ {#1}}}
 \newcommand{\short}[1]{\textcolor{blue}{ {#1}}}
 \else
+\newcommand{\augusto}[1]{}
+\newcommand{\gabi}[1]{}
 \newcommand{\chek}[1]{}
 \newcommand{\caio}[1]{}
-\newcommand{\diego}[1]{}
 \newcommand{\guido}[1]{}
 \newcommand{\mario}[1]{}
 \newcommand{\rem}[1]{}
