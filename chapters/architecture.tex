@@ -308,7 +308,7 @@ The system stay in this state until the processor asserts HBUSSREQ, at this time
   
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=\textwidth]{figures/read_grant_no_wait_new.JPG}
+    \includegraphics[width=\textwidth]{figures/others/read_grant_no_wait_new.JPG}
     \caption{Requesting grant with no wait states  }
     \label{fig:gnwsm}
 \end{figure}
@@ -316,7 +316,7 @@ The system stay in this state until the processor asserts HBUSSREQ, at this time
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=\textwidth]{figures/read_grant_ec_new_exended.JPG}
+    \includegraphics[width=\textwidth]{figures/others/read_grant_ec_new_exended.JPG}
     \caption{Requesting grant with wait states  }
     \label{fig:gwsm}
 \end{figure}
@@ -333,7 +333,7 @@ The system stay in this state until the processor asserts HBUSSREQ, at this time
  
   \begin{figure}[!ht]
     \centering
-    \includegraphics[width=\textwidth]{figures/basic_transfer_w_ctrl_new.JPG}
+    \includegraphics[width=\textwidth]{figures/others/basic_transfer_w_ctrl_new.JPG}
     \caption{Incremental burst transfers with halfword and word.}
     \label{fig:ublsm}
   \end{figure}
@@ -451,7 +451,7 @@ The\seceng~ operations  described in the previous sections can be better visuali
  
    \begin{figure}[!ht]
     \centering
-    \includegraphics[width=\textwidth]{figures/ptag_read_sec_eng.JPG}
+    \includegraphics[width=\textwidth]{figures/others/ptag_read_sec_eng.JPG}
     \caption{\ptag~ read and validate on \seceng.}
     \label{fig:ptgag_rd_no_mt}
 \end{figure}
@@ -460,7 +460,7 @@ The\seceng~ operations  described in the previous sections can be better visuali
  \item{\textbf{Write \ptag~ - }} for a write operation depicted in Figure \ref{fig:ptgag_rd_no_mt} the \sline~ that  come from \handler~  on time $2$ together with a write request are registered on IDLE state, next a new \ptag~ is generate in the CALC PTAG state, after the \ptag~is ready and the ptag\_ready signal is asserted on time $5$, a request to the \pmmu~ is made  to write the new \ptag in the \ptagmem on time $6$, finally the state is back to IDLE  and a line\_secure flag is asserted on time $9$ so the \handler~ can continue its operation. 
    \begin{figure}[!ht]
     \centering
-    \includegraphics[width=\textwidth]{figures/ptag_write_sec_eng.JPG}
+    \includegraphics[width=\textwidth]{figures/others/ptag_write_sec_eng.JPG}
     \caption{\ptag~ write  on \seceng.}
     \label{fig:se_pw_no_mt}
 \end{figure}
