@@ -3,7 +3,7 @@
 \section{Hardware setup}
 \label{sec:hardware_setup}
 
-
+\mario { Why are we using Leon 3 , were there other choices ?}
 We chose the \leon~platform from Cobham Gaisler~\cite{Leon} to implement \cshia. \leon~is a \vhdl~implementation of a SPARC V8 processor with configurable parameters, which together with some additional IP cores provide a suitable solution for embedded systems. In addition, \leon~has a free version for academic purposes that include sophisticated debugging tools, and it is available for a variety of \fpga~Development kits. Gaisler keeps an email list for support and constant updates are provided. All these features are interesting because \cshia~can be an extension of the platform available to the research community, and which also has solid design choices since \leon~is a product available to the industry.
 
 The implementation is based on Figure \ref{fig:cshia}. \leon's processor (the core) is connected through the main memory by a \amba~Bus version 2.0. In our modification, the processor's \io~master bus connects it to \handler, which then provides a new \io~master bus for the rest of the components in the platform. Thus, \handler~is transparent to all components of the platform, even the core. One of the components that is specific of \leon's platform is the Debug Support Unit (\dsu), which allows a designer using a debug host (such as a computer) to connect to development kits running \leon. Through the debugging connection, a program can be loaded to the \fpga~memory, started, paused, among other useful functions.

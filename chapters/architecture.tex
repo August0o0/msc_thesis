@@ -44,6 +44,19 @@
   % In modern computer systems, I\slash{}O operations store data directly into specific memory regions through DMA mechanism. Thus, it is not possible to trust such memory regions and \system~does not ensure their integrity and authenticity. Software should first perform authentication of I\slash{}O data in a higher abstraction layer and then copy it to secure areas where the \system~can ensure integrity and authenticity.
 
 
+\mario{never start a chapter with a figure, Add an introduction about what is going to be explained in  this chapter }
+
+\mario {cite Caio thesis , make clear each contribution}\cshia~was originally proposed in \cite{Hoffman2015} as an architecture for \iot. However, we believe that \cshia~fits in a broader class of embedded system applications that can benefit from its nice security features. As we stated before, many embedded system applications do not need secrecy\slash{}confidentiality, but strongly require code and data authenticity and integrity. 
+\augusto{
+This is a detailed version with Caio  contribution   in a higher level , this work is about just authenticity so it would be better to  get the version to TECS and  talk about the  improvements made by caio and cite his thesis, i just dont know in which part }
+\begin{figure}[H]
+	\centering
+% 	\includegraphics[scale=0.45]{cshia}
+	\includegraphics[width=\textwidth]{figures/pdf/CSHIA_detailed_caio_expansion.pdf}
+	\caption{The \cshia~architecture.}
+%	\vspace*{-9pt} 
+	%\label{fig:cshia}
+\end{figure}
 \begin{figure*}[!ht]
 	\centering
 % 	\includegraphics[scale=0.45]{cshia}
@@ -52,8 +65,6 @@
 %	\vspace*{-9pt} 
 	\label{fig:cshia}
 \end{figure*}
-
-\cshia~was originally proposed in \cite{Hoffman2015} as an architecture for \iot. However, we believe that \cshia~fits in a broader class of embedded system applications that can benefit from its nice security features. As we stated before, many embedded system applications do not need secrecy\slash{}confidentiality, but strongly require code and data authenticity and integrity. 
 Using the original work with some architectural elements modified to provide stronger security features, the first LEON3 \fpga~ based implementation of \cshia was realized. This section focus on presenting our \cshia~implementation components and how they work to provide authenticity and integrity. Figure \ref{fig:cshia} illustrates the basic components required for \cshia~ to work: 
 \begin{itemize}
     \item One core that in this implementation is a LEON3 processor;
@@ -77,7 +88,7 @@ Using the original work with some architectural elements modified to provide str
     \label{fig:general}
 \end{figure}
 
-The BUS used in the LEON3 processor is the Advanced High-performance Bus (AHB), where on-chip memory and other peripherals also reside. This bus provides a high-bandwidth interface between the elements connected it, also, located on bus is a bridge to the lower bandwidth APB, where most of the peripheral devices in the system are located. Figure \ref{fig:general} exemplify a traditional AHB utilization.
+The BUS used in the LEON3 processor is the Advanced High-performance Bus (AHB), where on-chip memory and other peripherals also reside. This bus provides a high-bandwidth interface between the elements connected to it, also, located on bus is a bridge to the lower bandwidth APB, where most of the peripheral devices in the system are located. Figure \ref{fig:general} exemplify a traditional AHB utilization.
 
 \amba~ AHB implements the features required for high-performance, high clock
 frequency systems including:
@@ -214,7 +225,7 @@ An Example of a master requesting the bus control is shown in Figure \ref{fig:gn
 
 \section{\cshia~Components}
 \label{sec:Components-of-the-Architecture}
-
+\mario{Try a top down approach}
 As Section \ref{subsec:integrity} discussed, the main resource to provide integrity are tags. Since \cshia~uses \puf-based keys to generate tags, we called them \puf-Tags, or \ptags~for short. \ptags~are the core of \cshia's design. They will be unique for each instance of \cshia~due to the unclonability property of \pufs. That ensures one-to-one relationship between programs and instances, providing authenticity. To handle \ptags, three main components are added to a conventional embedded system architecture. They are: The \ptag~Memory; the Bus Handler (\handler); and the Security Engine (\seceng). Figure \ref{fig:cshia} shows this design and how components communicate between themselves. 
 
 \ptag~Memory is an external memory and has its own buses. This architectural decision gives freedom to designers that can choose bus width, frequency, address space, etc. Because the processor is not aware of any additional component of \cshia, \handler~intercepts data transfers between processor and memory in order to provide them to \seceng~that generates tags. \handler~can also request data ( on behalf of the processor) to main memory so as  form complete memory blocks that are necessary to generate \ptags.
