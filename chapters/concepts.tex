@@ -10,7 +10,7 @@ This \puf~ is composed by a set of arbiter switches and  one arbiter, the latch,
 \begin{figure*}[!ht]
 	\centering
 % 	\includegraphics[scale=0.45]{cshia}
-	\includegraphics[width=\textwidth]{arbiter}
+	\includegraphics[width=0.85\textwidth]{arbiter}
 	\caption{One arbiter \puf~ that receives a challenge $X$ and produces the output $Y$.}
 %	\vspace*{-9pt} 
 	\label{fig:arbiterpuf}
@@ -22,7 +22,7 @@ The operation principle of an SRAM PUF is based on the transient behavior of an 
 So in a \puf~ that uses an SRAM, the challenge is the row and column ,the output is the state of the cell after power up.
 \begin{figure*}[!ht]
 	\centering
-	\includegraphics[scale=0.55]{figures/pdf/spuf}
+	\includegraphics[scale=0.42]{figures/pdf/spuf}
 % 	\includegraphics[width=\textwidth]{figures/pdf/spuf}
 	\caption{A simplistic example of a SRAM \puf~ , showing the SRAM cell logic circuit inside an SRAM block.}
 %	\vspace*{-9pt} 
@@ -30,7 +30,7 @@ So in a \puf~ that uses an SRAM, the challenge is the row and column ,the output
 \end{figure*}
 
 
-\subsection{\puf~ as a Cryptography  Key Generator }
+\subsection{\puf~ as a Cryptographic  Key Generator }
 When a system needs a key in hardware for any purpose, such as encryption, authentication or any other application, this key needs to be generated  and stored in hardware \cite{puf-key-devadas-1278484}. The main advantage of using \pufs~as key generators is that they can produce keys at running time, this way, on-chip memories are not needed for key storage. Another benefit is that they are unclonable, meaning that even the manufacturer itself cannot produce two \puf~instances that will have the same set of Challenge-Response Pairs (\crps) \cite{Gassend2002:PUFs}.
 \cshia~ uses a SRAM \puf~ together with a Fuzzy Extractor and the key extraction process is described in Section \ref{subsubsec:Key-Extraction}.
 

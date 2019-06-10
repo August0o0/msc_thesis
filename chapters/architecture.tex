@@ -47,7 +47,7 @@
 \begin{figure*}[!ht]
 	\centering
 % 	\includegraphics[scale=0.45]{cshia}
-	\includegraphics[width=\textwidth]{cshia}
+	\includegraphics[width=\textwidth]{figures/pdf/cshia.pdf}
 	\caption{The \cshia~architecture.}
 %	\vspace*{-9pt} 
 	\label{fig:cshia}
@@ -252,11 +252,10 @@ To implement the \cshia~ architecture, all the security operations described in 
 
 The inputs and outputs of this block can be split in four interfaces,
 the signals  ahbo\_in and ahbi\_out the interface with the processor,  ahbo\_out  and ahbi\_in
-the interface with the bus , ptag\_sval\_in and ptag\_sreq\_out with the security engine  and control and debug sgnals.
+the interface with the bus , ptag\_sval\_in and ptag\_sreq\_out with the security engine  and control and debug signals as described in Table \ref{table:shports}.
  The description of each type can be found in the Appendix \ref{ap:signals}.
 \begin{table}[H]
 % \centering
-\label{table:shports}
 \begin{tabular}{l l l l}
 \textbf{Port}   & \textbf{in/out} & \textbf{Type}        & \textbf{Description} 	\\ \hline \hline
 clk             & in              & std\_ulogic          & system clock         	\\ \hline
@@ -275,6 +274,8 @@ enroll\_done     & out             & std\_logic          & enrollment phase stat
 
 \end{tabular}
  \caption{Description of the \handler~ ports .}
+ \label{table:shports}
+
 \end{table}
 
 \subsubsection{Functional Description}
@@ -342,14 +343,14 @@ The system stay in this state until the processor asserts HBUSSREQ, at this time
  
  
  \item{\textbf{WRITE LINE}}
-
-The write process is much similar to the read, as Figure \ref{fig:ahbwrite} shows the difference is the HWRITE signal that is asserted during the entire transfer. After the write is completed the state is set to IDLE and the \handler~ is ready to send respond the processor requests.
-   \begin{figure}[!ht]
+   \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/others/ahbwrite.png}
     \caption{Incremental write burst of words.}
     \label{fig:ahbwrite}
   \end{figure}
+The write process is much similar to the read, as Figure \ref{fig:ahbwrite} shows the difference is the HWRITE signal that is asserted during the entire transfer. After the write is completed the state is set to IDLE and the \handler~ is ready to send respond the processor requests.
+
  \item{\textbf{SERVE LEON}}
 
  On this state  all LEON requests  read or write are executed, the \handler~~will assert the HGRANT and starting acting like the bus until there is data in the \sbuf. The transfers towards the processor are the same as described before in Figures \ref{fig:ublsm} and \ref{fig:ahbwrite}, when the processor requests  any address that is not on the \sbuf, the state is set to IDLE.
@@ -365,112 +366,118 @@ After a power cycle all the instructions are read and tagged in a process called
 \subsection{Security Engine}
 \label{sec:secengine}
 
-This block is responsible for the interface with the external memory which stores the physical tags values
-for each sets of challenges, and for calculating this values using one or more \pufs~, the \puf~ description is in Section \ref{subsec:Enrollment-Phase}.
-
-
 \begin{figure*}[!ht]
 	\centering
 	\includegraphics[scale=0.35]{security_engine_bb}
-    \caption{Security engine  black box  }
+    \caption{Security engine interface.  }
 %	\vspace*{-9pt} 
 	\label{fig:sebb}
 \end{figure*}
 
 
+This block is responsible for the security part of \cshia~,  as shown in Figure \ref{fig:sebb} it contains one interface toward the \ptagmem~ to read and write \ptags~ , one interface towards the \handler~  and also control and debug signals described in Table \ref{table:seports}.  The \seceng~ has three main  functions, extract the key  from the \puf~ , generate and validate \ptags~ and  make the \ptagmem operations transparent to \handler~ and to the processor.
+
+
 
 
 \subsubsection{Signal Description}
-
+%TODO remove the enroll tree
 \begin{table}[H]
-\centering
-\label{table:seports}
-\begin{tabular}{l l l l}
-
-\textbf{Port}   & \textbf{in/out} & \textbf{Type}        & \textbf{Description} 	\\ \hline \hline
-clk             & in              & std\_ulogic          & system clock         	\\ \hline
-rstn            & in              & std\_logic           & negated reset         	\\ \hline
-ptag\_sreq\_in  & in              & ptag\_sec\_req\_type & security check request    	\\ \hline
-ptag\_sval\_out & out             & ptag\_sec\_val\_type & security check response  	\\ \hline
-ptag\_mreq\_out & out             & ptag\_mreq\_type 	 & ptag memory  request    	\\ \hline
-ptag\_mresp\_in & in              & ptag\_mresp\_type 	 & ptag memory  response  	\\ \hline
-\end{tabular}
- \caption{Ports of the security engine}
+    \centering
+    \begin{tabular}{l l l l}
+    
+        \textbf{Port}   & \textbf{in/out} & \textbf{Type}        & \textbf{Description} 	\\ \hline \hline
+        clk             & in              & std\_ulogic          & system clock         	\\ \hline
+        rstn            & in              & std\_logic           & negated reset         	\\ \hline
+        ptag\_sreq\_in  & in              & ptag\_sec\_req\_type & security check request    	\\ \hline
+        ptag\_sval\_out & out             & ptag\_sec\_val\_type & security check response  	\\ \hline
+        ptag\_mreq\_out & out             & ptag\_mreq\_type 	 & ptag memory  request    	\\ \hline
+        ptag\_mresp\_in & in              & ptag\_mresp\_type 	 & ptag memory  response  	\\ \hline
+        enroll\_done    & in              &  std\_logic      	 & enroll phase status  	\\ \hline
+        %enroll\_tree    & in              &  std\_logic      	 & \mt~control 	\\ \hline
+        status          & in              &  std\_logic      	 & internal state 	\\ \hline
+        
+    \end{tabular}
+    \caption{Description of the \seceng~ ports.}
+    \label{table:seports}
 \end{table}
 
 
 
 
 \subsubsection{Functional Description}
-  \begin{figure}[H]
+
+\begin{figure}[!ht]
     \centering
     \includegraphics[width=0.70\textwidth]{figures/pdf/sec_engine_sm.pdf}
-    \caption{Top of the system  }
+    \caption{\seceng~ state  machine. }
     \label{fig:sesm}
 \end{figure}
 
+The \seceng~ is the core of \cshia~, here all the security features take place. This block has the following features: 
+\begin{enumerate}
+    \item Extract the cryptographic key from the SPUF
+    \item Create the \ptags~for each \sline
+    \item Validate \ptags an inform the \handler~that the execution is secure
+    \item Control the \ptagmem~ 
+\end{enumerate}
+%TODO remove the tree from the thesis
+%There are two possible configurations for the \seceng~, with or without a \mt~ to provide integrity, both options are evaluated in Section \ref{sec:hardware_setup}.
+ The implementation of \seceng~ uses a state machine illustrated in Figure \ref{fig:sesm} to synchronize the internal components. The state machine transactions will be used to explain  how \seceng~ works.
 
-The functional operation of this block consists in two basic actions, given a challenge
-calculate the PTAG  using the internal PUF  and if this is a check operation the compare
- the calculated value with the equivalent from the PTAG memory, if its a write operations
- than just store the calculated value in the PTAG memory.the state machine needed to complete
- this task is described bellow.
 
 \begin{itemize}
   \item{\textbf{IDLE}}
  
-The security engine stays in  IDLe  until a valid challenge is signalized, then the input is 
-registered and a request for the PUF is sent to calculate tha PTAG , as well as read operation 
- to the PTAG memory  in case of a check operation.
+The  \seceng~. stays in  IDLE  state until a valid \sline~ is sent by the \handler~, when the line arrives either is to write or validate a \ptag~, for both cases the line will be registered  and a \ptag~will be generated, so the next state will be CALC PTAG. 
  
   \item{\textbf{CALC PTAG}}
-  When  a new challenge comes to be checked or written, a new ptag is calculated using the internal PUF, 
-  after the calculation is ready the controller goes either to VALIDATE state if this is a check operation
-  or to WRITE PTAg state if this is a write operation.
+  After a \sline~ is registered in IDLE state it is used to generate a \ptag, this can take many clock cycles. After the \ptag is ready the initial controls signal from the \handler~ are evaluated and the state is set to  either VALIDATE or to WRITE PTAG if this is a write operation. If the next state is  VALIDATE, a request is made to the \pmmu~ to fetch the previous calculated  \ptag~ of the equivalent \sline.
   
 
   \item{\textbf{VALIDATE}}
-  Since in this state the PTAG from the PTAG memory and the calculated from the PUF are ready this state compares
-  the values and send the result as a security response to the security handler. Then  the system goes back to IDLE.
+  Since in this state the \ptag~ from the \ptagmem and the new generated one from the CALC PTAG state are ready, the comparison between  the two values  can be done and the result as a security response to the \handler~ can be sent. Then  the system goes back to IDLE.
   
 
  \item{\textbf{WRITE PTAG}}
- This state  uses the memory interface to  write the calculated PTAG in the PTAG memory and send a confirmation
- through the security response to the security handler.
-
-
-
+  This state  signalizes to the \pmmu~  that the \ptag~ from the CALC PTAG state can be written in the \ptagmem~ and a  confirmation to the \handler~ is sent.
 \end{itemize}
 
 
-\augusto{extend this  section talking about the waves }
-\subsubsection{\ptag~Read}
-  \begin{figure}[H]
+\subsubsection{\seceng~ operation }
+The\seceng~ operations  described in the previous sections can be better visualized  as a continuous operation, for this the validate and the write transactions  are described next.
+\begin{itemize}
+ \item{\textbf{Validate \ptag~ - }} As can be seen in Figure \ref{fig:ptgag_rd_no_mt}  on time $2$ the \handler~ sends a  \sline to the \seceng~, the line is registered and the generation of the \ptag~ starts, when the ptag\_ready signal is asserted,  the equivalent \ptag~ for the \sline~ is requested from the \ptagmem~. On time $4$ in one cycle the comparison is made and if the \ptags~ match a line\_secure flag is asserted and the  \handler can continue to serve the processor.
+ 
+   \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{figures/ptag_read_sec_eng.JPG}
-    \caption{\ptag~ read without \mt }
+    \caption{\ptag~ read and validate on \seceng.}
     \label{fig:ptgag_rd_no_mt}
 \end{figure}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/ptag_read_tree_sec_eng.JPG}
-    \caption{\ptag~ read with \mt }
-    \label{fig:ptgag_rd_mt}
-\end{figure}
 
-\subsubsection{\ptag~Write}
-  \begin{figure}[H]
+
+ \item{\textbf{Write \ptag~ - }} for a write operation depicted in Figure \ref{fig:ptgag_rd_no_mt} the \sline~ that  come from \handler~  on time $2$ together with a write request are registered on IDLE state, next a new \ptag~ is generate in the CALC PTAG state, after the \ptag~is ready and the ptag\_ready signal is asserted on time $5$, a request to the \pmmu~ is made  to write the new \ptag in the \ptagmem on time $6$, finally the state is back to IDLE  and a line\_secure flag is asserted on time $9$ so the \handler~ can continue its operation. 
+   \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{figures/ptag_write_sec_eng.JPG}
-    \caption{\ptag~ write  on sec engine without \mt  }
+    \caption{\ptag~ write  on \seceng.}
     \label{fig:se_pw_no_mt}
 \end{figure}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/ptag_write_tree_sec_eng.JPG}
-    \caption{\ptag~ write  on sec engine with \mt.  }
-    \label{fig:se_pw_mt}
-\end{figure}
+\end{itemize}
+
+%  \begin{figure}[H]
+%    \centering
+%    \includegraphics[width=\textwidth]{figures/ptag_read_tree_sec_eng.JPG}
+%    \caption{\ptag~ read with \mt }
+%    \label{fig:ptgag_rd_mt}
+%\end{figure}
+%  \begin{figure}[H]
+%    \centering
+%    \includegraphics[width=\textwidth]{figures/ptag_write_tree_sec_eng.JPG}
+%    \caption{\ptag~ write  on sec engine with \mt.  }
+%    \label{fig:se_pw_mt}
+%\end{figure}
 %===========================================================================================================================================================
 
 
@@ -478,10 +485,13 @@ registered and a request for the PUF is sent to calculate tha PTAG , as well as 
 
 \subsection{\ptag~ Memory Management Unit (\pmmu)}
 \label{subsec:pmmu}
-The \ptag~Memory Management Unit (\pmmu). The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~and also to decode internal addresses of \ptags~to physical addresses of \ptagmem. In addition to that, \pmmu~can have two distinct designs. If a designer chooses to use timestamps as solution for replay attacks, \pmmu~will have an internal memory to store and control timestamps of the memory blocks. However, if the solution for replay attacks is a \mt\cite{Elbaz2009}, \pmmu~will control verification and update of the tree, as well as it will have a cache memory, the \ptagcache, to speed up these tasks.
-\subsubsection{\ptagmem}
-\label{subsubsec:ptagmem}
-\augusto{describe memories connected to  PMMU}
+The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~ and also to decode internal addresses of \ptags~to physical addresses of \ptagmem. This block is required every time a security check is needed by the \handler~, it needs to provide the  \ptag~ from the equivalent \slines~  to be compared in the VALIDATE state of the \seceng~  and write the new generated \ptags when requested in the WRITE PTAG state of the \seceng.  Other blocks of \cshia~ are agnostic to the \pmmu operation since  it controls the \ptagmem~ that is not connected to the bus.
+ %In addition to that, \pmmu~can have two distinct designs. 
+%If a designer chooses to use timestamps as solution for replay attacks, \pmmu~will have an internal memory to store and control timestamps of the memory blocks.
+% However, if the solution for replay attacks is a \mt\cite{Elbaz2009}, \pmmu~will control verification and update of the tree, as well as it will have a cache memory, the \ptagcache, to speed up these tasks.
+%\subsubsection{\ptagmem}
+%\label{subsubsec:ptagmem}
+%\augusto{describe memories connected to  PMMU}
 
 
 \section{Operation Modes}
@@ -544,12 +554,12 @@ There are multiple ways of implementing a \fuzzy. Originally, \cshia~was propose
         \label{fig:fuzzy-extractor}
 \end{figure}
 
-To fully explain \fenroll, the chosen parameters are detailed. First, \cshia~incorporates \pufs~that produce 64-bit responses (more details in the next section). These \pufs~will be responsible to generate each string $r$ and $w$ that are 64 bits long. To match the length of $r$ and $w$, \cshia~has a $(127, 64, 10)$-\bch~\ecc. As \fenroll~depicts, there are four bit strings $r_i$, which are compounded two by two and fed to the \prf~(Figure \ref{fig:key-construction}). Such combinations were specifically designed to match the \prf~chosen for \cshia, the \siphash~\cite{Aumasson2012:SipHash}, which has an output of 64 bits and uses key of 128 bits. Therefore, the first pair of bit strings $r_i$ is concatenated with a constant and processed by the \prf~using the second pair of bit string $r_i$ as key. That generates a hash $K_1$. Then, inverting their places and concatenating the second pair with a different constant, a hash $K_2$ is obtained. Concatenating $K_1$ with $K_2$ results in $K$ which is the secret key of \cshia. Notice that $C_1$ and $C_2$ in Figure \ref{fig:key-construction} are replacing addresses for input of the \ptaggen. Further details of security will be given in the following sections, however, one can notice that assuming that each bit string $r_i$ has at least half of their length of entropy, each part of the key will have full entropy. Hence, the key has full entropy. 
+To fully explain \fenroll, the chosen parameters are detailed. First, \cshia~incorporates \pufs~that produce 64-bit responses. These \pufs~will be responsible to generate each string $r$ and $w$ that are 64 bits long. To match the length of $r$ and $w$, \cshia~has a $(127, 64, 10)$-\bch~\ecc. As \fenroll~depicts, there are four bit strings $r_i$, which are compounded two by two and fed to the \prf~(Figure \ref{fig:key-construction}). Such combinations were specifically designed to match the \prf~chosen for \cshia, the \siphash~\cite{Aumasson2012:SipHash}, which has an output of 64 bits and uses key of 128 bits. Therefore, the first pair of bit strings $r_i$ is concatenated with a constant and processed by the \prf~using the second pair of bit string $r_i$ as key. That generates a hash $K_1$. Then, inverting their places and concatenating the second pair with a different constant, a hash $K_2$ is obtained. Concatenating $K_1$ with $K_2$ results in $K$ which is the secret key of \cshia. Notice that $C_1$ and $C_2$ in Figure \ref{fig:key-construction} are replacing addresses for input of the \ptaggen. Further details of security will be given in the following sections, however, one can notice that assuming that each bit string $r_i$ has at least half of their length of entropy, each part of the key will have full entropy. Hence, the key has full entropy. 
 
 \subsubsection{Full Memory Protection}
 \label{subsubsec:Full-Memory-Protection}
 
-The Enrollment Phase proceeds to tag the memory range the manufacturer\slash{}vendor specified during design. Now that \ptaggen~has an unique key, \seceng~orders \handler~to bring all memory blocks and deliver them to it. \seceng~will use \ptaggen~to generate \ptags, however, depending on the solution against replay attacks a designer chooses, \ptaggen~is used differently. 
+The Enrollment Phase proceeds to tag the memory range the manufacturer\slash{}vendor specified during design. Now that \ptaggen~has an unique key, \seceng~orders \handler~to bring all memory blocks and deliver them to it. \seceng~will use \ptaggen~to generate \ptags.%, however, depending on the solution against replay attacks a designer chooses, \ptaggen~is used differently. 
 
 % \paragraph{Timestamps Generation}
 % \label{paragraph:Timestamps-Generation}

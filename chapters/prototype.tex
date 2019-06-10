@@ -49,15 +49,15 @@ We implemented \cshia~in an Altera \fpga~Development Kit DE2-115. The parameters
     \hline
       \ptag~Memory & 216,064 bytes\\
       \hspace{0.25in} Code and Data \ptags & 18816 words of 64 bits\\ 
-      \hspace{0.25in} \mt~\ptags & 8192 words of 64 bits\\ 
+     % \hspace{0.25in} \mt~\ptags & 8192 words of 64 bits\\ 
       \hspace{0.25in} Data coverage & 512 KB\\
       \hspace{0.25in} Total coverage & 588 KB\\
     \hline
       \pmmu & \\
-      \hspace{0.25in} Time Stamp Memory & $2^{14}$ timestamps\\
-      \hspace{0.25in} Time Stamp Length & 16 bits\\
+      %\hspace{0.25in} Time Stamp Memory & $2^{14}$ timestamps\\
+      %\hspace{0.25in} Time Stamp Length & 16 bits\\
       \hspace{0.25in} \ptag~Cache & 4 KB \\
-      \hspace{0.25in} \pmmu~Buffer for \mt & 2 * number of cache lines\\
+      %\hspace{0.25in} \pmmu~Buffer for \mt & 2 * number of cache lines\\
     \hline
   \end{tabular}
 %\vspace*{-12pt}
@@ -65,16 +65,15 @@ We implemented \cshia~in an Altera \fpga~Development Kit DE2-115. The parameters
 
 Continuing to look at Table \ref{tab:config}, the \ptagmem~uses internal memory of the \fpga. This option arose due to limiting options available in the kit. Because we wanted to design a 64-bit bus memory, no better option than internal memory was available. The \sram~of the kit only allowed 16-bit words. We also could not increase the frequency of the \sram~using PLLs since its maximum frequency was limited to 125 MHz, and, to simulate a 64-bit bandwidth, we would need at least a \sram~operating at 200 MHz. The option for \fpga~internal memory limited our coverage to a maximum of 512 KB of data memory, which resulted in a memory overhead of 36 \% (code, data, and \mt). In addition, to reduce unused memory words in \ptagmem, we split it into two. This allowed to create an easy decoder to separate \ptags~of memory blocks from those of chunks of \ptags. 
 
-Due to the high utilization of internal memory, timestamp memory became limited to $2^{14}$ 16-bit words to cover the 512 KB of data memory. This represents 5.4\% of the total 588 KB main memory coverage. The \ptagmem~utilization for this solution was up to 147 KB (code and data), or 25\% overhead. Table \ref{tab:config} also shows the \ptag~cache's configuration. Since this cache is an internal memory as well, it was limited to 4 KB. That limitation did not prevent us of evaluating the cache in multiple configurations. We evaluated this cache in different configurations of lines, set associativity, and replacement policies. Finally, as previously discussed, \pmmu~requires a buffer to stall a \ptag~cache write or read while an eviction is required. We calculated that this buffer needs to be at most 2 times the number of lines in \ptagcache. 
+%Due to the high utilization of internal memory, timestamp memory became limited to $2^{14}$ 16-bit words to cover the 512 KB of data memory. This represents 5.4\% of the total 588 KB main memory coverage. The \ptagmem~utilization for this solution was up to 147 KB (code and data), or 25\% overhead. Table \ref{tab:config} also shows the \ptag~cache's configuration. Since this cache is an internal memory as well, it was limited to 4 KB. That limitation did not prevent us of evaluating the cache in multiple configurations. We evaluated this cache in different configurations of lines, set associativity, and replacement policies. Finally, as previously discussed, \pmmu~requires a buffer to stall a \ptag~cache write or read while an eviction is required. We calculated that this buffer needs to be at most 2 times the number of lines in \ptagcache. 
 
-One last information about our \fpga~\cshia~implementation is that it had three modes of operation. In the first mode, called \baseline, the \handler~is disabled and all security-specific hardware is bypassed. A second mode, the \timestamp, activates \pmmu~for timestamps only. Finally, the third mode, \textit{\cshia-MT}, disables timestamps and activates the cache in \pmmu~for supporting the Merkle Tree implementation. Being able to switch between those modes only using switch keys of the development key helped us in debugging and evaluating the performance of the architecture.
+%One last information about our \fpga~\cshia~implementation is that it had three modes of operation. In the first mode, called \baseline, the \handler~is disabled and all security-specific hardware is bypassed. A second mode, the \timestamp, activates \pmmu~for timestamps only. Finally, the third mode, \textit{\cshia-MT}, disables timestamps and activates the cache in \pmmu~for supporting the Merkle Tree implementation. Being able to switch between those modes only using switch keys of the development key helped us in debugging and evaluating the performance of the architecture.
 
 
 \section{GAISLER Tools}
 \label{sec:gaisler_tools}
 \subsection{Overview}
- GRMON is a general debug monitor for the LEON processor, and for SOC designs based on the GRLIB IP
-library. GRMON includes the following functions:
+ GRMON is a general debug monitor for the LEON processor, it includes the following functions:
 \begin{itemize}
 
  \item Read/write access to all system registers and memory
@@ -90,8 +89,7 @@ library. GRMON includes the following functions:
 
 The GRMON debug monitor is intended to debug system-on-chip (SOC) designs based on the LEON processor. 
 The monitor connects to a dedicated debug interface on the target hardware, through which it can perform
-read and write cycles on the on-chip bus (AHB). The debug interface can be of various types: the LEON2 processor
-supports debugging over a serial UART and 32-bit PCI, while LEON3 also supports JTAG, ethernet and
+read and write cycles on the on-chip bus (AHB).LEON3 also supports JTAG, ethernet and
 spacewire (using the GRESB ethernet to spacewire bridge) debug interfaces. On the target system, all debug
 interfaces are realized as AHB masters with the debug protocol implemented in hardware. There is thus no
 software support necessary to debug a LEON system, and a target system does in fact not even need to have a processor present.
