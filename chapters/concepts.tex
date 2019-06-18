@@ -1,6 +1,6 @@
 %Intro 
 
-
+To better understand this work, some basic concepts need to be clarified. It is essential to understand the role of each component, so the goal of this chapter is to understand how a physical function can help us achieve a robust architecture. Using a PUF as a mean to achieve physical security objectives that are secure key generation and storage,  and then using this key together with cryptographic primitives to achieve information security objectives that are data integrity and authentication. 
 
 
 
@@ -53,7 +53,7 @@ In the following, we discuss hardware implementation of those security features.
 \label{subsec:Authenticity}
 Suppose that an attacker wants to add \hisher~own code for execution in the embedded system or intends to move the data from one system instance to another. These attacks can be avoided by employing authentication mechanisms. In this solution, a key (or unique set of keys) is determined for each instance.
 %TODO explain the instance more clear
-Code \andor~ data are tagged using these keys during manufacturing \rem{(an enrollment phase)}. \mario{this is typical of integrity } \ed{At run time, this key (or set of keys) is used to regenerate tags. Only a correct key value will be able to verify what was installed during manufacture. Therefore, an instance will not accept code or data that was not tagged using its own keys.}
+Code \andor~ data are tagged using these keys during manufacturing. \mario{this is typical of integrity } At run time, this key (or set of keys) is used to regenerate tags. Only a correct key value will be able to verify what was installed during manufacture. Therefore, an instance will not accept code or data that was not tagged using its own keys.
 
 Before the introduction of electronic \pufs \cite{Gassend2002:PUFs}, these keys had to be inserted into the system before they were made available to the users. To do so, keys are stored on-chip using non-volatile memories and the manufacturer\slash{}vendor controlled the uniqueness of the keys in each instance. The main downsides of storing key permanently include: facilitating physical attacks \cite{Sadeghi2010:Security-PUFs}, and possibly increasing costs of production since it may demand integration of different technologies on the same chip.
 
