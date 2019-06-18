@@ -44,29 +44,34 @@
   % In modern computer systems, I\slash{}O operations store data directly into specific memory regions through DMA mechanism. Thus, it is not possible to trust such memory regions and \system~does not ensure their integrity and authenticity. Software should first perform authentication of I\slash{}O data in a higher abstraction layer and then copy it to secure areas where the \system~can ensure integrity and authenticity.
 
 
-\mario{never start a chapter with a figure, Add an introduction about what is going to be explained in  this chapter }
+%\mario{never start a chapter with a figure, Add an introduction about what is going to be explained in  this chapter }
 
 
 
-\mario {cite Caio thesis, make clear each contribution}\cshia~was originally proposed in \cite{Hoffman2015} as an architecture for \iot. However, we believe that \cshia~fits in a broader class of embedded system applications that can benefit from its nice security features. Many embedded system applications do not need secrecy\slash{}confidentiality, but strongly require code and data authenticity and integrity. 
-\augusto{
-This is a detailed version with Caio  contribution   in a higher level, this work is about just authenticity so it would be better to  get the version to TECS and  talk about the  improvements made by caio and cite his thesis, i just dont know in which part }
-\begin{figure}[H]
+
+
+\section{Overview}
+\label{sec:overviewarch}
+
+%\mario {cite Caio thesis, make clear each contribution}
+\cshia~was originally proposed in \cite{Hoffman2015} as an architecture for \iot. However, we believe that \cshia~fits in a broader class of embedded system applications that can benefit from its nice security features. Many embedded system applications do not need secrecy\slash{}confidentiality, but strongly require code and data authenticity and integrity. 
+%\augusto{This is a detailed version with Caio  contribution   in a higher level, this work is about just authenticity so it would be better to  get the version to TECS and  talk about the  improvements made by caio and cite his thesis, i just dont know in which part }
+\begin{figure}[!ht]
     \centering
 %     \includegraphics[scale=0.45]{cshia}
     \includegraphics[width=\textwidth]{figures/pdf/CSHIA_detailed_caio_expansion.pdf}
     \caption{The \cshia~architecture.}
 %    \vspace*{-9pt} 
-    %\label{fig:cshia}
-\end{figure}
-\begin{figure*}[!ht]
-    \centering
-%     \includegraphics[scale=0.45]{cshia}
-    \includegraphics[width=\textwidth]{figures/pdf/cshia.pdf}
-    \caption{The \cshia~architecture.}
-%    \vspace*{-9pt} 
     \label{fig:cshia}
-\end{figure*}
+\end{figure}
+%\begin{figure*}[!ht]
+%    \centering
+%     \includegraphics[scale=0.45]{cshia}
+%    \includegraphics[width=\textwidth]{figures/pdf/cshia.pdf}
+%    \caption{The \cshia~architecture.}
+%    \vspace*{-9pt} 
+%    \label{fig:cshia}
+%\end{figure*}
 Using the original work with some architectural elements modified to provide stronger security features, the first LEON3 \fpga~ based implementation of \cshia was realized. This section focus on presenting the \cshia~implementation components and how they work to provide authenticity and integrity. Figure \ref{fig:cshia} illustrates the basic components required for \cshia~ to work: 
 \begin{itemize}
     \item One core that in this implementation is a LEON3 processor;
@@ -422,7 +427,7 @@ This block is responsible for the security part of \cshia~,  as shown in Figure 
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.70\textwidth]{figures/pdf/sec_engine_sm.pdf}
+    \includegraphics[width=0.70\textwidth]{figures/pdf/sec_engine_sm_no_tree.pdf}
     \caption{\seceng~ state  machine. }
     \label{fig:sesm}
 \end{figure}

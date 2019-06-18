@@ -43,14 +43,15 @@ Table \ref{tab:related-work} presents a summary of the advantages and drawbacks 
 
 
 %\begin{sidewaystable}
-\begin{table*}[!b]
+\begin{table*}[!ht]
 	\center
 	\caption{Summary of Related Works in comparison with \cshia.}
 	\label{tab:related-work}
 	\footnotesize
-	\begin{tabular}{cp{1in}p{2in}p{2in}}
+	%\begin{tabular}{cp{1in}p{2in}p{2in}}
+	%\begin{tabular}{cppp}
 	%\resizebox{\textwidth}{!}{\begin{tabular}{cccc}
-
+     \resizebox{\textwidth}{!}{\begin{tabular}{cp{1in}p{2in}p{2in}}
 		\hline
 			Work & Target Architecture & Advantages & Drawbacks \\	
 		\hline
@@ -71,7 +72,7 @@ Table \ref{tab:related-work} presents a summary of the advantages and drawbacks 
 		\hline
 			\cshia & Embedded Systems & Design Flexibility. & Does not provide concrete estimate of area and power. \\
 		\hline
-	\end{tabular}
+	\end{tabular}}
 	%}
 %	\vspace*{-12pt}
 %\end{sidewaystable}
