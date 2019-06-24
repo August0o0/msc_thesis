@@ -45,8 +45,15 @@
 
 
 %\mario{never start a chapter with a figure, Add an introduction about what is going to be explained in  this chapter }
-
-
+The \cshia~ architecture was build over an original work in  \cite{Hoffman2015}, where the security evaluation and the viability of such solution were pondered, although the work contained an original architecture, the implementation details that would make it feasible was still to be considered.  As illustrated in Figure \ref{fig:cshiaflow}, this first theoretical proposal was matched with a platform that would make the implementation possible; this is described in Chapter \ref{chap:cshia_prototype}.  With a physical platform, the creation of new interfaces was possible, and the design tradeoffs evaluated. With the end of the design phase, the first \cshia~ basic architecture was ready and, later expanded to receive security upgrades, the goal of this Chapter is to describe in details the \cshia~ architecture and split highlight the contribution of this work and external components.
+\begin{figure}[!ht]
+    \centering
+%     \includegraphics[scale=0.45]{cshia}
+    \includegraphics[width=\textwidth]{figures/pdf/arch_flow.pdf}
+    \caption{The \cshia~architecture flow since the proposal in \cite{Hoffman2015} until the final evaluation.}
+%    \vspace*{-9pt} 
+    \label{fig:cshiaflow}
+\end{figure}
 
 
 
@@ -59,20 +66,24 @@
 \begin{figure}[!ht]
     \centering
 %     \includegraphics[scale=0.45]{cshia}
-    \includegraphics[width=\textwidth]{figures/pdf/CSHIA_detailed_caio_expansion.pdf}
-    \caption{The \cshia~architecture.}
+    \includegraphics[width=\textwidth]{figures/pdf/CSHIA_basic.pdf}
+    \caption{The \cshia~ basic architecture.}
 %    \vspace*{-9pt} 
     \label{fig:cshia}
 \end{figure}
-%\begin{figure*}[!ht]
-%    \centering
+Using the original work with some architectural elements modified to provide stronger security features, the first LEON3 \fpga~ based implementation of \cshia was realized. Figure \label{fig:cshia} illustrates the first \cshia~ implementation, where the full functionality originally proposed was available. All the interfaces, control, and design choices are part of this work, the security component highlighted, the FUZZY EXTRACTOR  is responsible for extracting and store the security key and is not described here.  This basic architecture was further evaluated and expanded to be robust against replay attacks, for this,  the architecture illustrated in Figure \label{fig:cshiaexpanded} was implemented and extra security components were added, the \ptag~ cache, a timestamp generation and control and a security feature shown as MERKLE TREE control. Together these new components that are not part of this work provide a more robust solution that is evaluated in the next sessions.
+
+
+
+\begin{figure}[!ht]
+    \centering
 %     \includegraphics[scale=0.45]{cshia}
-%    \includegraphics[width=\textwidth]{figures/pdf/cshia.pdf}
-%    \caption{The \cshia~architecture.}
+    \includegraphics[width=\textwidth]{figures/pdf/CSHIA_detailed_caio_expansion.pdf}
+    \caption{The \cshia~expanded architecture.}
 %    \vspace*{-9pt} 
-%    \label{fig:cshia}
-%\end{figure*}
-Using the original work with some architectural elements modified to provide stronger security features, the first LEON3 \fpga~ based implementation of \cshia was realized. This section focus on presenting the \cshia~implementation components and how they work to provide authenticity and integrity. Figure \ref{fig:cshia} illustrates the basic components required for \cshia~ to work: 
+    \label{fig:cshiaexpanded}
+\end{figure}
+ This section focus on presenting the \cshia~implementation components and how they work to provide authenticity and integrity, also an introduction of the \amba~ protocol is provided to understand the proposed architecture better. Figure \ref{fig:cshiaexpanded} illustrates the basic components required for \cshia~ to work: 
 \begin{itemize}
     \item One core that in this implementation is a LEON3 processor;
     \item The \cshia~ components:
@@ -88,12 +99,7 @@ Using the original work with some architectural elements modified to provide str
 
 \section{\amba}
 \label{sec:amba2}
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[width=1\textwidth]{figures/pdf/typical_amba_new.pdf}
-    \caption{Typical \amba~ system , with a CPU , DMA and other low bandwidth peripherals. }
-    \label{fig:general}
-\end{figure}
+
 
 The BUS used in the LEON3 processor is the Advanced High-performance Bus (AHB), where on-chip memory and other peripherals also reside. This bus provides a high-bandwidth interface between the elements connected to it, also, located on the bus is a bridge to the lower bandwidth APB, where most of the peripheral devices in the system are located. Figure \ref{fig:general} exemplify a traditional AHB utilization.
 
@@ -107,15 +113,14 @@ frequency systems including:
 \item {wider data bus configurations (64/128 bits).}
 \end{itemize}
 
- 
+ \begin{figure}[!ht]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/pdf/typical_amba_new.pdf}
+    \caption{Typical \amba~ system , with a CPU , DMA and other low bandwidth peripherals. }
+    \label{fig:general}
+\end{figure}
 \subsection{\amba~ AHB operation}
 
-\begin{figure}[!ht]
-    \centering
-    \includegraphics[width=0.7\textwidth]{figures/pdf/amba2_arbiter.pdf}
-    \caption{Overview  of the \amba~ Organization, with the arbiters masters and slaves distribution.}
-    \label{fig:internorg}
-\end{figure}
 
 The previously described \amba~ components are seen by the bus as masters and slaves, as depicted in Figure \ref{fig:internorg}, where, for instance, the CPU is an \amba~ master and the on-chip RAM is a slave. Who decides the priorities and decode all access is the \amba~ arbiter, which will be described further.
 
@@ -124,6 +129,12 @@ Before an \amba~ AHB transfer, from now on just referred to as transfer, can com
 \item incremental bursts, which do not wrap at address boundaries
 \item wrapping bursts, which wrap at particular address boundaries.
 \end{itemize}
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/pdf/amba2_arbiter.pdf}
+    \caption{Overview  of the \amba~ Organization, with the arbiters masters and slaves distribution.}
+    \label{fig:internorg}
+\end{figure}
 
 A write data bus is used to move data from a master to a slave, during a read data bus
 is used to move data from a slave to a master.
@@ -134,15 +145,15 @@ Every transfer consists of:
 \item one or more cycles for the data.
 \end{itemize}
 
+
+
+In the address and control cycle, the address cannot be extended, and therefore, all slaves must sample the address during this time. The data, however, can be extended using the HREADY signal. When LOW these signal causes wait states to be inserted into the transfer and allow extra time for the slave to provide or sample data, as can be seen in Figure \ref{fig:basic_ahb_transfer}. During a transfer, the slave shows the status using the HRESP response signal where the  following values are used:
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=0.4\textwidth]{figures/others/simple_ahb_transfer.png}
     \caption{AHB basic transfer with one cycle for address and control and one or many for data.}
     \label{fig:basic_ahb_transfer}
 \end{figure}
-
-
-In the address and control cycle, the address cannot be extended, and therefore, all slaves must sample the address during this time. The data, however, can be extended using the HREADY signal. When LOW these signal causes wait states to be inserted into the transfer and allow extra time for the slave to provide or sample data, as can be seen in Figure \ref{fig:basic_ahb_transfer}. During a transfer, the slave shows the status using the HRESP response signal where the  following values are used:
 
 \begin{itemize}
 
@@ -427,7 +438,7 @@ This block is responsible for the security part of \cshia~,  as shown in Figure 
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[width=0.70\textwidth]{figures/pdf/sec_engine_sm_no_tree.pdf}
+    \includegraphics[width=0.70\textwidth]{figures/pdf/sec_engine_sm.pdf}
     \caption{\seceng~ state  machine. }
     \label{fig:sesm}
 \end{figure}
@@ -439,33 +450,39 @@ The \seceng~ is the core of \cshia~, here all the security features take place. 
     \item Validate \ptags an inform the \handler~that the execution is secure
     \item Control the \ptagmem~ 
 \end{enumerate}
-%TODO remove the tree from the thesis
-%There are two possible configurations for the \seceng~, with or without a \mt~ to provide integrity, both options are evaluated in Section \ref{sec:hardware_setup}.
- The implementation of \seceng~ uses a state machine illustrated in Figure \ref{fig:sesm} to synchronize the internal components. The state machine transactions will be used to explain how \seceng~ works.
+The implementation of \seceng~ uses a state machine illustrated in Figure \ref{fig:sesm} to synchronize the internal components so,  the  state machine transactions will be used to explain how \seceng~ works. The initial state where IDLE, VALIDATE,CALC PTAG  and WRITE PTAG, after the \cshia~ expansion to add a \mt~  two more states were added, WRITE ON TREE and WAIT ON TREE  to cooperate with the  latency of the tree  operations. There are two possible configurations for the \seceng~, with or without a \mt~ to provide extra protection and improve the integrity of the system this states are explained bellow. 
 
 
 \begin{itemize}
   \item{\textbf{IDLE}}
  
-The \seceng ~ stays in the IDLE  state until a valid \sline~ is sent by the \handler~ when the line arrives either is to write or validate a \ptag~, for both cases, the line will be registered and a \ptag~will be generated, so the next state will be CALC PTAG. 
+The \seceng~ stays in the IDLE  state until a valid \sline~ is sent by the \handler~ when the line arrives either is to write or validate a \ptag~, for both cases, the line will be registered, and a \ptag~ will be generated so that the next state will be CALC PTAG. 
  
   \item{\textbf{CALC PTAG}}
-  After a \sline~ is registered in IDLE state it is used to generate a \ptag, a process that can take many clock cycles. After the \ptag is ready, the initial controls signal from the \handler~ are evaluated and the state is set to either VALIDATE or  WRITE PTAG if this is a write operation. If the next state is  VALIDATE, a request is made to the \pmmu~ to fetch the previously calculated \ptag ~ of the equivalent \sline.
+  After a \sline~ is registered in IDLE state, it is used to generate a \ptag, a process that can take many clock cycles. After the \ptag~ is ready, the initial controls signal from the \handler~ are evaluated, and the state is set to either VALIDATE for a read operation or  WRITE PTAG if this is a write operation.  In the extended \cshia~ the next state is set to either WAIT TREE for a read operation or  WRITE ON TREE if this is a write operation. For all possible cases, if the operation was a read, a request is made to the \pmmu~ to fetch the previously calculated \ptag~ of the equivalent \sline.
   
 
   \item{\textbf{VALIDATE}}
-  Since in this state the \ptag~ from the \ptagmem and the newly generated one from the CALC PTAG state are ready, the comparison between the two values can be done and the result as a security response to the \handler~ can be sent. Then the system goes back to IDLE.
+  Since in this state the \ptag~ from the \ptagmem~ and the newly generated one from the CALC PTAG state are ready, the comparison between the two values can be done, and the result as a security response to the \handler~ can be sent. Then the system goes back to IDLE.
   
 
  \item{\textbf{WRITE PTAG}}
   This state signalizes to the \pmmu~  that the \ptag~ from the CALC PTAG state can be written in the \ptagmem~ and confirmation to the \handler~ is sent.
+  
+   \item{\textbf{WRITE ON TREE}}
+  When the \mt~ is used, this state will utilize the \cshia~extensions to write the \ptag~  on the memory. It requires a different set of operations that is out of this work scope and after the write is done the next state is IDLE again.
+  
+  \item{\textbf{WAIT TREE}}
+  After a \ptag~ is calculated in a read request, if the \mt~ is used,  the system will need time to retrieve the current \ptag~ from the tree. This state will wait for it, and the next state will be VALIDATE.
+
 \end{itemize}
 
-
 \subsubsection{\seceng~ operation }
-The\seceng~ operations described in the previous sections can be better visualized as a continuous operation, for this the validate and the write transactions are described next.
+The \seceng~ operations described in the previous sections can be better visualized as a continuous operation, so every time a new \sline~  is loaded it will be called a validate operation and every time it is written it will be called a write operation. The validate and the write transactions are described next.
+
+
 \begin{itemize}
- \item{\textbf{Validate \ptag~ - }} As can be seen in Figure \ref{fig:ptgag_rd_no_mt}  on time $2$ the \handler~ sends a  \sline to the \seceng~, the line is registered and the generation of the \ptag~ starts, when the ptag\_ready signal is asserted,  the equivalent \ptag~ for the \sline~ is requested from the \ptagmem~. On time $4$ in one cycle the comparison is made and if the \ptags~ match a line\_secure flag is asserted and the \handler can continue to serve the processor.
+ \item{\textbf{Validate \ptag~ - }} As can be seen in Figure \ref{fig:ptgag_rd_no_mt}  on time $2$ the \handler~ sends a  \sline to the \seceng~, the line is registered and the generation of the \ptag~ starts, when the ptag\_ready signal is asserted,  the equivalent \ptag~ for the \sline~ is requested from the \ptagmem~ oin time $5$. On time $6$ in one cycle the comparison is made and if the \ptags~ match a line\_secure flag is asserted and the \handler can continue to serve the processor.
  
    \begin{figure}[!ht]
     \centering
@@ -473,29 +490,34 @@ The\seceng~ operations described in the previous sections can be better visualiz
     \caption{\ptag~ read and validate on \seceng.}
     \label{fig:ptgag_rd_no_mt}
 \end{figure}
+This process is slightly modified  in the extended \cshia, as can be seen in Figure  \ref{fig:ptgag_rd_mt}, on time $5$  the new \ptag~ will be compared to the content of the tree so, the new state WAIT TREE  is used to wait for this  operation and then  on time $8$ the comparison is made and the \seceng~ can proceed.   
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/others/ptag_read_tree_sec_eng.JPG}
+    \caption{\ptag~ read with \mt }
+    \label{fig:ptgag_rd_mt}
+\end{figure}
 
-
- \item{\textbf{Write \ptag~ - }} for a write operation, like in the example from  Figure \ref{fig:ptgag_rd_no_mt}, the \sline~ that  come from \handler~  on time $2$ together with a write request are registered on IDLE state.  Next a new \ptag~ is generated in the CALC PTAG state, after the \ptag~is ready and the ptag\_ready signal is asserted on time $5$, a request to the \pmmu~ is made  to write the new \ptag in the \ptagmem on time $6$, finally the state is back to IDLE  and a line\_secure flag is asserted on time $9$ so the \handler~ can continue its operation. 
+ \item{\textbf{Write \ptag~ - }} for a write operation, like in the example from  Figure \ref{fig:ptgag_rd_no_mt}, the \sline~ that  come from \handler~  on time $2$ together with a write request are registered on IDLE state.  Next a new \ptag~ is generated in the CALC PTAG state, after the \ptag~is ready and the ptag\_ready signal is asserted on time $5$, a request to the \pmmu~ is made  to write the new \ptag in the \ptagmem on time $6$, finally the state is back to IDLE  and a line\_secure flag is asserted on time $7$ so the \handler~ can continue its operation. 
    \begin{figure}[!ht]
     \centering
     \includegraphics[width=\textwidth]{figures/others/ptag_write_sec_eng.JPG}
     \caption{\ptag~ write  on \seceng.}
     \label{fig:se_pw_no_mt}
 \end{figure}
+
+In the extended \cshia~ an extra step is needed as depicted in Figure \ref{fig:se_pw_mt} on time $5$ a write is performed on the \mt~ and after this write is complete on time $8$ the \seceng~ can continue its operations. 
+
+  \begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{figures/others/ptag_write_tree_sec_eng.JPG}
+    \caption{\ptag~ write  on sec engine with \mt.  }
+    \label{fig:se_pw_mt}
+\end{figure}
 \end{itemize}
 
-%  \begin{figure}[H]
-%    \centering
-%    \includegraphics[width=\textwidth]{figures/ptag_read_tree_sec_eng.JPG}
-%    \caption{\ptag~ read with \mt }
-%    \label{fig:ptgag_rd_mt}
-%\end{figure}
-%  \begin{figure}[H]
-%    \centering
-%    \includegraphics[width=\textwidth]{figures/ptag_write_tree_sec_eng.JPG}
-%    \caption{\ptag~ write  on sec engine with \mt.  }
-%    \label{fig:se_pw_mt}
-%\end{figure}
+
+
 %===========================================================================================================================================================
 
 
