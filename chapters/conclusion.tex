@@ -1,0 +1,18 @@
+\pufs~ are physical security primitives which enable trust in the context of digital hardware implementations of cryptographic constructions, in particular, they can initiate physically unclonable and secure key generation and storage. In this dissertation, the implementation of \cshia~, a platform that utilizes \pufs~ to achieve information security objectives that are data integrity and authentication is presented. 
+
+We described in detail the building blocks of this implementation and the way this system can work at block level together with the impact of this implementation in comparison to the non-secure system.
+
+In  Chapter \ref{chap:fundamental_concepts}, we introduced the basics of \pufs~ and the information security goals of this work, in order to make clear what we want to achieve. The importance of authentication and integrity was highlighted and examples of \pufs~  in order to give useful examples of how they work and fit in the context of this work.
+
+A review of the related work was presented in chapter \ref{chap:related_work}, where similar architectures implemented security features to provide similar features as \cshia, but in this kind of work, it is difficult to have a fair comparison  between  the security features and the implementation details, mostly because of \fpga~ limitations and the way synthesis tools deal with different designs. So the characteristics of each work were resumed and compared with strong and weak points to make it easier to see where \cshia~ fill the gaps of other works, presenting performance, area, power estimations and now implementations details of the how the security blocks work on hardware.
+
+The \cshia~ architecture implementation was described in Chapter \ref{chap:cshia_architecture}, with an extensive description of the AMBA protocol and all the steps required to get the results achieved, the initial \cshia~ architecture and which components were added to extend \cshia~ to make it more robust and improve integrity. The contributions of this work were described and an in-depth explanation of how the building blocks of this implementation work with timing diagrams and interfaces explained.
+
+
+Chapter \ref{chap:cshia_prototype} presented the details of the prototype, and how using the Leon3 processor with our tailored security IPs in a DE2-115 \fpga~ development kit we could sustain the original 50MHz, and due to the limitations of the kit, we covered 512Kb of memory. The evaluation of the prototype was presented in Chapter \ref{chap:cshia:evaluation}  were we show the selected benchmarks together with the total coverage and performance of the \cshia~ extended implementation where without the \mt~ the average  performance degradation is $2.76\%$ and with  it goes to $5.77\%$ in exchange of a more robust design. Analyzing area and power the \cshia~ logic overhead achieved $34\%$ mostly due to the \sbuf~ that scales when accessing big \slines.
+
+  The contributions of this work were submitted to the following venues 
+ \begin{itemize}
+ \item{TETC-2017} Publication 1  - description 1
+ \item{MicPro-2018} Publication 2 - description 2
+ \end{itemize}

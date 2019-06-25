@@ -1,9 +1,8 @@
-
+To test the \cshia~ architecture  we utilized industry standard IPs provided with no cost for academic purposes, the target processor to receive the security updates was the Leon3, any processor with an AMBA2 interface  could be used since the goal of this work is to test how easy the implementation fits an already existing design and  the impact on the performance. This chapter shows the prototype hardware setup and the tools used to make it work.
 
 \section{Hardware setup}
 \label{sec:hardware_setup}
 
-\mario { Why are we using Leon 3 , were there other choices ?}
 We chose the \leon~platform from Cobham Gaisler~\cite{Leon} to implement \cshia. \leon~is a \vhdl~implementation of a SPARC V8 processor with configurable parameters, which together with some additional IP cores provide a suitable solution for embedded systems. In addition, \leon~has a free version for academic purposes that include sophisticated debugging tools, and it is available for a variety of \fpga~Development kits. Gaisler keeps an email list for support and constant updates are provided. All these features are interesting because \cshia~can be an extension of the platform available to the research community, and which also has solid design choices since \leon~is a product available to the industry.
 
 The implementation is based on Figure \ref{fig:cshia}. \leon's processor (the core) is connected through the main memory by a \amba~Bus version 2.0. In our modification, the processor's \io~master bus connects it to \handler, which then provides a new \io~master bus for the rest of the components in the platform. Thus, \handler~is transparent to all components of the platform, even the core. One of the components that is specific of \leon's platform is the Debug Support Unit (\dsu), which allows a designer using a debug host (such as a computer) to connect to development kits running \leon. Through the debugging connection, a program can be loaded to the \fpga~memory, started, paused, among other useful functions.
@@ -49,15 +48,15 @@ We implemented \cshia~in an Altera \fpga~Development Kit DE2-115. The parameters
     \hline
       \ptag~Memory & 216,064 bytes\\
       \hspace{0.25in} Code and Data \ptags & 18816 words of 64 bits\\ 
-     % \hspace{0.25in} \mt~\ptags & 8192 words of 64 bits\\ 
+      \hspace{0.25in} \mt~\ptags & 8192 words of 64 bits\\ 
       \hspace{0.25in} Data coverage & 512 KB\\
       \hspace{0.25in} Total coverage & 588 KB\\
     \hline
       \pmmu & \\
-      %\hspace{0.25in} Time Stamp Memory & $2^{14}$ timestamps\\
-      %\hspace{0.25in} Time Stamp Length & 16 bits\\
+      \hspace{0.25in} Time Stamp Memory & $2^{14}$ timestamps\\
+      \hspace{0.25in} Time Stamp Length & 16 bits\\
       \hspace{0.25in} \ptag~Cache & 4 KB \\
-      %\hspace{0.25in} \pmmu~Buffer for \mt & 2 * number of cache lines\\
+      \hspace{0.25in} \pmmu~Buffer for \mt & 2 * number of cache lines\\
     \hline
   \end{tabular}
 %\vspace*{-12pt}

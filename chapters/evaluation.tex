@@ -1,10 +1,7 @@
 
 
-This section describes the experimental setup and results. First, it describes benchmarks and experiments configuration. Then, it presents experimental results on performance, area and power estimates.
+This chapter describes the experimental setup and results. First, it describes benchmarks and experiments configuration. Then, it presents experimental results on performance, area and power estimates.
 \augusto{removed the Merkle tree tradeoff and analysis}
-
-\section{Design choices}
-\augusto{describe design tradeoffs}
 
 
 \section{Experimental Setup}
@@ -109,10 +106,7 @@ Since we did not have access to standard tools from industry to synthesize \vhdl
 Ahmed \etal~presented their \leon~design separating area, static and dynamic power for the core and its cache memory. We ignore their cache memory values since they differ from our implementation. Moreover, our primary goal is to estimate the area of logic elements. Thus, we will assume a proportional relation between their core area, 0.191 mm$^{2}$, and the number of \fpga~logic elements of the \baseline~implementation, which is 23,629 in the Altera's DE2-115 development kit. %tat static power (at 25\textordmasculine) 85.3 $\mu$W and dynamic power (at 100 MHz) was 5.75 mW. Although \cshia's~\fpga~implementation runs at 50 MHz, we can use Ahmed \etal~results to estimate \cshia's area overhead. As well as, for power, we can compute \leon's and \cshia's power using Intel's Early Power Estimators (\epe) \cite{Intel:EPE} for \fpgas~and deduce an estimative based on the ASIC power consumption of Ahmed \etal
 
 Through this proportional relation between area and logic elements, our estimate for the \timestamp~and \cshiamt, without additional memories, is 0.246 mm$^{2}$ and 0.264 mm$^{2}$, respectively. As we said, area and power can be proportional, and thus we can use similar reasoning to estimate power. From Ahmed \etal's work, static and dynamic power (at 100 MHz) are 85.3 $\mu$W and 5.75 mW, respectively. Those numbers result in static power of 109.48 $\mu$W for \timestamp~and 117.41 $\mu$W for \cshiamt. In terms of dynamic power, we obtained 7.41 mW for \timestamp~and 7.94 mW for \cshiamt.
-
-We used \cacti~to estimate how the timestamp memory and \ptagcache~affects the design. From Table \ref{tab:config}, the total timestamp memory size was 2 bytes $\times~2^{14}$ (or 32 KB). Even though \cacti~does do not offer an option for non-volatile estimative, a DRAM like estimation provides an insight of area and power. For the \ptagcache, we estimated 4-KB \ptagcache~with 64 lines and two sets, all estimations are summarized in Table \ref{tab:area-power}. 
-
-\begin{table}[t]
+\begin{table}[!ht]
 	\center
 	\caption{Area and power for \cshia~implementation~without considering instruction and data cache memories of the processor.}
 	\label{tab:area-power}
@@ -140,5 +134,9 @@ We used \cacti~to estimate how the timestamp memory and \ptagcache~affects the d
 	\end{tabular}
 %\vspace*{-12pt}
 \end{table}
+
+We used \cacti~to estimate how the timestamp memory and \ptagcache~affects the design. From Table \ref{tab:config}, the total timestamp memory size was 2 bytes $\times~2^{14}$ (or 32 KB). Even though \cacti~does do not offer an option for non-volatile estimative, a DRAM like estimation provides an insight of area and power. For the \ptagcache, we estimated 4-KB \ptagcache~with 64 lines and two sets, all estimations are summarized in Table \ref{tab:area-power}. 
+
+
 
 Even if our estimates are not very accurate, they allow to analyze which solution would provide the best trade-off among area, power, and performance penalties. Thus, based on our numbers, the \timestamp~would be the best solution. Of course, that would only apply to this specific memory size we evaluated. In the security side, 16-bit timestamps will not provide the same security as our \cshiamt~instances with \ptags~of 64 bits. In addition, if the coverage of the data segment needs to be increased, the timestamp memory can reach prohibitive configurations for power and area. In such a situation, \cshiamt~would be capable of offering this higher coverage without impacting in on-chip power and area. Nonetheless, higher penalties in performance would happen. 
