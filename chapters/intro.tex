@@ -17,7 +17,7 @@ Due to the stringent nature in available resources of embedded systems, software
 Other approaches need modifications on the Instruction Set Architecture (\isa) or processor datapath, leading to complete redesign of code, compilers, operating systems, among others. Moreover, not all solutions provide integrity and authenticity.
 
 Recently, an architecture aiming at code/data authenticity and integrity was proposed in \cite{Hoffman2015}. The Computer Security by Hardware-Intrinsic Authentication (\cshia) provides authenticity by authenticating all memory blocks of the external memory using a unique key extracted from Physical Unclonable Functions (\pufs) implemented in each instance. The authentication tags (called \ptags) are computed during an enrollment procedure and later verified or updated on runtime for each memory block brought to the processor. The main advantages of \cshia~ over the previous hardware solutions are that it does not require changes in the \isa~or datapath, being adaptable to most of the embedded system architectures while providing complete software compatibility, it also uses a separate bus for the tag memory, which gives designers the freedom to match timing requirements so as to hide verification overhead.
-\mario{Add: \\  the research proposal of this dissertation , goals of the msc and the contributions , not necessarily in  subsections maybe add research questions }
+\mario{Add: \\  the research proposal of this dissertation , goals of the msc and the contributions , not necessarily in  subsections maybe add research questions } 
 
 %TODO  Focus on the architecture  and design tradoffs, caio is going to describe the security part 
 
@@ -32,7 +32,7 @@ Recently, an architecture aiming at code/data authenticity and integrity was pro
 The main contributions to this work are the following: 
 \begin{enumerate}[label=(\alph*)]
     \item it provides the first hardware implementation of the CSHIA architecture ,using LEON3 processor;
-    \item it analyses the trade-offs of the resulting architecture \mario{Expand  what will be shown , are power ?? }
+    \item it analyses the trade-offs of the resulting architecture, performance in benchmarks and provide area and power estimations. 
 \end{enumerate}
 
 % the publications submitted will be mentioned  inthe conlcusions and in te presentation
