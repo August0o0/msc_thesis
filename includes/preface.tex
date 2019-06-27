@@ -32,9 +32,12 @@ Escrever o resumo emportugues
 
 % Sempre deve haver um abstract:
 \begin{abstract}
-% The abstract must have at most 500 words and must fit in a single page.
-\mario{ADD: \\ Context  \\ motivation \\  objectives \\ state of art \\ implementation proposal \\ prototype evaluation \\ conclusion \\  }
- The Computer Security by Hardware-Intrinsic Authentication (\cshia) was proposed to provide authenticity by authenticating all memory blocks of an external memory using a unique key extracted from Physical Unclonable Functions (\pufs). Based on Gaisler's \leon~ \fpga~implementation, this work presents a proof-of-concept of \cshia. The main goal of our implementation was to improve the original version of the architecture and add more flexible design choices. Besides it is also presents an in depth description of the hardware implementation, the design tradeoffs and the integration between the architecture and a real processor.
+
+
+Standard design techniques to secure code execution are based on well-known cryptographic mechanisms and (micro) architecture features to encode bus transactions, or isolate secure code into trusted platforms, among others. 
+Although such techniques usually provide proper levels of security, most of them are either inefficient, considerably impact processor (micro) architecture design, require extensive changes in the programming tool-chain, or are so complicated that may create unexpected security loopholes.
+Aiming to address this security issues in code execution the Computer Security by Hardware-Intrinsic Authentication (\cshia) was proposed to provide authenticity by authenticating all memory blocks of an external memory using a unique key extracted from Physical Unclonable Functions (\pufs). 
+Based on Gaisler's \leon~ \fpga~implementation, this work presents a proof-of-concept of \cshia, presenting the details and an in-depth description of the hardware implementation, the design tradeoffs, and the integration between the architecture and a real processor.  We show the FPGA resources, a performance evaluation with industry standard benchmarks and power and area estimations. \mario{É comum finalizar o abstract com uma frase resaltando as vantagens e contribuições }
 
 \end{abstract}
 
