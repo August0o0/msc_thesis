@@ -1,7 +1,8 @@
 %Intro 
 
-To better understand this work, some basic concepts need to be clarified. It is essential to understand the role of each component, so the goal of this chapter is to understand how a physical function can help us achieve a robust architecture. Using a PUF as a mean to achieve physical security objectives that are secure key generation and storage,  and then using this key together with cryptographic primitives to achieve information security objectives that are data integrity and authentication. \mario{Neste capítulo, vc deve colocar os conceitos básicos utilizados para a realização do trabalho, de modo a equalizar a informação do leitor. Assim: PUFs, conceitos de criptografia, arquiteturas de protótipos e seu uso. Faltou este último.}
+To better understand this work, some basic concepts need to be clarified. It is essential to understand the role of each component, so the goal of this chapter is to understand how a physical function can help us achieve a robust architecture. Using a PUF as a mean to achieve physical security objectives that are secure key generation and storage,  and then using this key together with cryptographic primitives to achieve information security objectives that are data integrity and authentication. \mario{Neste capítulo, vc deve colocar os conceitos básicos utilizados para a realização do trabalho, de modo a equalizar a informação do leitor. Assim: PUFs, conceitos de criptografia, arquiteturas de protótipos e seu uso. Faltou este último.} \augusto{feito}
 
+This chapter will present the  \pufs~in Section \ref{sec:pufs}, also show basic examples to provide a better understanding of these functions and how we can use it to generate cryptographic keys. In Section \ref{sec:securityproperties}, a hardware approach of how to achieve information security objectives are introduced, and finally in Section \ref{sec:prototypes}, what is a prototype and how we can model it to answer our design questions.
 
 
 %======================================================================
@@ -77,9 +78,36 @@ An embedded system can also use encryption to prevent exposure of code \andor~da
 
 
 \section{Prototypes}
+\label{sec:prototypes}
+
 %@ARTICLE{Houde97whatdo,
 %@misc{ScienceEncProt,
+
+When one comes up with an idea, it can take several steps to test its availability and come to a final product, sketches, drawings, and possibly prototypes. A prototype is an initial model built to test a design\cite{ScienceEncProt}.
+ Today complex systems can have numerous combinations of software, hardware, user interactions, and visual among other possible components of this hypothetical system.  
+ 
+ \begin{figure*}[!ht]
+	\centering
+	\includegraphics[scale=0.52]{figures/pdf/houdemodel.pdf}
+% 	\includegraphics[width=\textwidth]{figures/pdf/spuf}
+	\caption{Houde \etal~model for evaluation of the goals of prototypes.}
+%	\vspace*{-9pt} 
+	\label{fig:houdemodel}
+\end{figure*}
+Houde \etal~\cite{Houde97whatdo}proposes a simple model to understand what prototypes prototype, in this model, a designer can evaluate its goals and evaluate the prototype.  Figure \ref{fig:houdemodel} shows Houde's model where the dimensions can be interpreted as follows, bearing in mind that one artifact is the system being designed.
+\begin{itemize}
+    \item Role - questions about the functions of the final artifact in a user's life and this dimension will represent the context of it.
+    \item Look and feel - denote questions about the sensory experience of an artifact, and this dimension will require a real user experience.
+    \item Implementation -  refer to techniques and components required for an artifact to accomplish its function. This dimension requires a working system to be built. Prototypes in this dimension are usually built to answer technical questions about the artifact and identify performance issues.
+    \item Integration - It refers to a full experience of the design, it should be functional with the correct context and as close as possible to what it will look to a user.
+\end{itemize}
+
+
+Today we have cycle accurate computer simulations that allow individuals to test hardware even without physical instances, prototypes are still useful, though, for testing functionality, safety, and commercial potential.
+
+
 
 
 
 \mario{It is common to end each chapter with a closure,  in a higher abstraction level do a connections with  the next chapters }
+\augusto{como uma  new section ? somente texto no final da ultima ?}

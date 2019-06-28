@@ -1,9 +1,19 @@
 
-
-This chapter describes the experimental setup and results. First, it describes benchmarks and experiments configuration. Then, it presents experimental results on performance, area and power estimates.
 \augusto{removed the Merkle tree tradeoff and analysis}
 \mario{Apresentar a organização do capítulo.}
-\mario{Caberia uma seção inicial com os objetivos e requisitos da avaliação.}
+\mario{Caberia uma seção inicial com os objetivos e requisitos da avaliação.}\augusto{colocado junto ao texto}
+
+
+The hardware setup described in Chapter \ref{chap:cshia_prototype} was evaluated to measure the impact of the implemented architecture on the original provided by GAISLER. The evaluation was performed in two ways,  performance, and resources(Area and Power).  
+This chapter describes the goals of this evaluation, the experimental setup, and results. First, it describes benchmarks and experiments configuration in Section 
+\ref{subsec:Experimental-Setup}. Then, it presents experimental results on performance in Section \ref{subsec:Performance-Analysis}, also in the area and power estimates discussed in Section \ref{subsec:Power-and-Area-Estimative}.
+
+\section{Evaluation Goals}
+\label{sec:evalgoals}
+When evaluating a hardware design, two particular metrics are of interest, the performance of that design and the resource consumption \cite{WolfHardSoft}.  In this work, the goal was to use industry standard benchmarks to measure performance, in this case, the MiBench suite, and for the resources estimate area and power as close as possible to the final result. 
+
+As discussed in the previous chapters, the intention of this evaluation is to measure the \cshia~extended implementation since it provides a more robust solution, the evaluations of the next sections include all the previously described components that are part of his work.  
+
 
 \section{Experimental Setup}
 \label{subsec:Experimental-Setup}
@@ -140,4 +150,4 @@ We used \cacti~to estimate how the timestamp memory and \ptagcache~affects the d
 
 
 
-Even if our estimates are not very accurate, they allow to analyze which solution would provide the best trade-off among area, power, and performance penalties. Thus, based on our numbers, the \timestamp~would be the best solution. Of course, that would only apply to this specific memory size we evaluated. In the security side, 16-bit timestamps will not provide the same security as our \cshiamt~instances with \ptags~of 64 bits. In addition, if the coverage of the data segment needs to be increased, the timestamp memory can reach prohibitive configurations for power and area. In such a situation, \cshiamt~would be capable of offering this higher coverage without impacting in on-chip power and area. Nonetheless, higher penalties in performance would happen. \mario{Closure}
+Even if our estimates are not very accurate, they allow to analyze which solution would provide the best trade-off among area, power, and performance penalties. Thus, based on our numbers, the \timestamp~would be the best solution. Of course, that would only apply to this specific memory size we evaluated. In the security side, 16-bit timestamps will not provide the same security as our \cshiamt~instances with \ptags~of 64 bits. In addition, if the coverage of the data segment needs to be increased, the timestamp memory can reach prohibitive configurations for power and area. In such a situation, \cshiamt~would be capable of offering this higher coverage without impacting in on-chip power and area. Nonetheless, higher penalties in performance would happen. \mario{Closure}\augusto{nao deveria ser na conclusao?}

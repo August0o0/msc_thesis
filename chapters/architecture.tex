@@ -1,6 +1,6 @@
 
 
-The \cshia~architecture was build over an original work in  \cite{Hoffman2015}, where the security evaluation and the viability of such solution were pondered, although the work contained an original architecture, the implementation details that would make it feasible was still to be considered.  As illustrated in Figure \ref{fig:cshiaflow}, this first theoretical proposal was matched with a platform that would make the implementation possible; this is described in Chapter \ref{chap:cshia_prototype}.  With a physical platform, the creation of new interfaces was possible, and the design tradeoffs evaluated. With the end of the design phase, the first \cshia~basic architecture was ready and, later expanded to receive security upgrades, the goal of this Chapter is to describe in details the \cshia~architecture and split highlight the contribution of this work and external components.
+The \cshia~architecture was build over an original work in  \cite{Hoffman2015}, where the security evaluation and the viability of such solution were pondered, although the work contained an original architecture, the implementation details that would make it feasible was still to be considered.  As illustrated in Figure \ref{fig:cshiaflow}, this first theoretical proposal was matched with a platform that would make the implementation possible; this is described in Chapter \ref{chap:cshia_prototype}.  With a physical platform, the creation of new interfaces was possible, and the design tradeoffs evaluated. With the end of the design phase, the first \cshia~basic architecture was ready and, later expanded to receive security upgrades, the goal of this Chapter is to describe in details the \cshia~architecture and highlight the contribution of this work and external components.
 \begin{figure}[!ht]
     \centering
 %     \includegraphics[scale=0.45]{cshia}
@@ -10,11 +10,12 @@ The \cshia~architecture was build over an original work in  \cite{Hoffman2015}, 
     \label{fig:cshiaflow}
 \end{figure}
 
-\mario{Aqui cabe uma informação ao leitor do que compõe este capítulo. A seção tal apresenta..... etc}
+\mario{Aqui cabe uma informação ao leitor do que compõe este capítulo. A seção tal apresenta..... etc}\augusto{adicionado}
+
+This Chapter is organized to introduce the components as they are needed to understand each part of the system. First, a macro look of the \cshia~architecture  in Section \ref{sec:overviewarch} to introduce the building blocks of this implementation, then, since this architecture will be interconnected using the \amba~bus, Section \ref{sec:amba2} describes the main components of this bus and how they work together to provide high-speed interconnections. Section \ref{sec:Components-of-the-Architecture} shows in detail all the components that are in the scope of this work and include the description and  waveforms of the signals to explain how they interact with each other and, finally how \cshia~implementation works and in the security point of view  how it accomplishes  the security goals that are described in Section \ref{sec:opmodes}.
 
 \section{Overview}
 \label{sec:overviewarch}
-
 
 \cshia~was originally proposed in \cite{Hoffman2015} as an architecture for \iot. However, we believe that \cshia~fits in a broader class of embedded system applications that can benefit from its nice security features. Many embedded system applications do not need secrecy\slash{}confidentiality, but strongly require code and data authenticity and integrity. 
 %\augusto{This is a detailed version with Caio  contribution   in a higher level, this work is about just authenticity so it would be better to  get the version to TECS and  talk about the  improvements made by caio and cite his thesis, i just dont know in which part }
@@ -26,7 +27,7 @@ The \cshia~architecture was build over an original work in  \cite{Hoffman2015}, 
 %    \vspace*{-9pt} 
     \label{fig:cshia}
 \end{figure}
-Using the original work with some architectural elements modified to provide stronger security features, the first LEON3 \fpga~based implementation of \cshia~was realized. Figure \ref{fig:cshia} illustrates \mario{Comente o significado das cores, aqui ou na caption.} the first \cshia~implementation, where the full functionality originally proposed was available. All the interfaces, control, and design choices are part of this work, the security component highlighted, the FUZZY EXTRACTOR  is responsible for extracting and store the security key and is not described here. \mario{frase confusa.}  
+Using the original work with some architectural elements modified to provide stronger security features, the first \leon~\fpga~based implementation of \cshia~was realized. Figure \ref{fig:cshia} illustrates \mario{Comente o significado das cores, aqui ou na caption.}\augusto{adicionei no texto} the first \cshia~implementation, where the full functionality originally proposed was available and indicated in light blue. All the interfaces, control, and design choices are part of this work, the security component hatched in the Figure, the FUZZY EXTRACTOR  ehich is responsible for extracting and store the security key is an IP developed  in another work and wont be detailed in this dissertation. \mario{frase confusa.} \augusto{tentei deixar claro que nao é parte do trabalho}  
 
 This basic architecture was further evaluated and expanded to be robust against replay attacks, for this,  the architecture illustrated in Figure \ref{fig:cshiaexpanded} was implemented and extra security components were added, the \ptag~cache, a timestamp generation and control and a security feature shown as MERKLE TREE control. Together these new components that are not part of this work provide a more robust solution that is evaluated in the next sessions. \mario{Agora ficou muito bom, muito claro.}
 
@@ -40,9 +41,9 @@ This basic architecture was further evaluated and expanded to be robust against 
 %    \vspace*{-9pt} 
     \label{fig:cshiaexpanded}
 \end{figure}
- This section focus on presenting the \cshia~implementation components and how they work to provide authenticity and integrity, also an introduction of the \amba~protocol is provided to understand the proposed architecture better. Figure \ref{fig:cshiaexpanded} illustrates the basic components required for \cshia~to work: 
+ The following sections focus on presenting the \cshia~implementation components and how they work to provide authenticity and integrity, also an introduction of the \amba~protocol is provided to understand the proposed architecture better. Figure \ref{fig:cshiaexpanded} illustrates the basic components required for \cshia~to work: 
 \begin{itemize}
-    \item One core that in this implementation is a LEON3 processor;
+    \item One core that in this implementation is a \leon~processor;
     \item The \cshia~components:
     \begin{itemize}
         \item \ptag~Memory Management Unit (\pmmu)
@@ -56,9 +57,9 @@ This basic architecture was further evaluated and expanded to be robust against 
 
 \section{\amba}
 \label{sec:amba2}
+To interconnect complex systems, one can create customized protocols to fit the needs of the design or use industry standard protocols to save design and verification time like \amba~which is a protocol that enables fast interconnections of components and is broadly used. This protocol is based on masters slaves and arbiters so, the goal of the this section is to describe these components and how they work together to make sure all components communicate properly.
 
-
-The BUS used in the LEON3 processor is the Advanced High-performance Bus (AHB), where on-chip memory and other peripherals also reside. This bus provides a high-bandwidth interface between the elements connected to it, also, located on the bus is a bridge to the lower bandwidth APB, where most of the peripheral devices in the system are located. Figure \ref{fig:general} exemplify a traditional AHB utilization.
+\amba~is a flavor of the Advanced High-performance Bus (AHB), where on-chip memory and other peripherals also reside. This bus provides a high-bandwidth interface between the elements connected to it, also, located on the bus is a bridge to the lower bandwidth APB, where most of the peripheral devices in the system are located. Figure \ref{fig:general} exemplify a traditional AHB utilization.
 
 \amba~AHB implements the features required for high-performance, high clock
 frequency systems including:
@@ -76,10 +77,11 @@ frequency systems including:
     \caption{Typical \amba~system , with a CPU , DMA and other low bandwidth peripherals. }
     \label{fig:general}
 \end{figure}
+
+
 \subsection{\amba~AHB operation}
-
-
-The previously described \amba~components are seen by the bus as masters and slaves, as depicted in Figure \ref{fig:internorg}, where, for instance, the CPU is an \amba~master and the on-chip RAM is a slave. Who decides the priorities and decode all access is the \amba~arbiter, which will be described further.
+\label{subsec:ahbops}
+The \amba~AHB operation relies on basic entities to work so, to understand the previously described \amba~components, we need to go one step back and see what the bus sees.  Anything connected to the AHB bus is either a master or a slave, as depicted in Figure \ref{fig:internorg}, where, for instance, the CPU is an \amba~master, and the on-chip RAM is a slave. Who decides the priorities and decode all access is the \amba~arbiter. Masters can perform read and write requests while slaves need to answer when requested, the arbiter will guarantee a fair execution of those requests. This section will show the operations of an \amba~system.
 
 Before an \amba~AHB transfer, from now on just referred to as transfer, can commence the bus master must be granted access to the bus. This process is started by the master asserting a request signal to the arbiter. Then the arbiter indicates when the master will be granted use of the bus. A granted bus master starts a transfer by driving the address and control signals. These signals provide information on the address, direction and width of the transfer, as well as an indication if the transfer forms part of a burst. Two different forms of burst transfers are allowed:
 \begin{itemize}
@@ -122,7 +124,7 @@ In the address and control cycle, the address cannot be extended, and therefore,
 
 \subsection{\amba~Components}
 %\augusto{say that we are reducing the scope to what was used in the design }
-These \amba~components are a  subset of the entire \amba~features, the focus of this sections is to provide the basis to understand of the signals and work required for the \cshia~implementation, for a full reference please check \cite{ARMAMBA2}.
+As described in Section \label{subsec:ahbops}  master, slaves, and arbiters are the main components of an \amba~system, understanding their behavior in detail will help to understand the general behavior of the system. These \amba~components are a  subset of the entire \amba~features, the focus of this Section is to provide the basis to understand of the signals and work required for the \cshia~implementation, for a full reference please check \cite{ARMAMBA2}.
 
 \subsubsection{Masters}
 \begin{figure}[!ht]
@@ -154,7 +156,7 @@ An AHB bus slave, as depicted in Figure \ref{fig:slaveint}, uses almost the same
     \label{fig:arbiterint}
 \end{figure}
 
- The role of the arbiter in an \amba~system is to control which master has access to the bus. As can be seen in Figure \ref{fig:arbiterint} every bus master has a REQUEST / GRANT interface to the arbiter and the arbiter uses a prioritization scheme to decide which bus master is currently the highest priority master requesting the bus. The detail of the priority scheme is not specified and is defined for each application. It is acceptable for the arbiter to use other signals, either \amba~or non-\amba~, to influence the priority scheme that is in use.
+ The role of the arbiter in an \amba~system is to control which master has access to the bus. As can be seen in Figure \ref{fig:arbiterint} every bus master has a REQUEST / GRANT interface to the arbiter and the arbiter uses a prioritization scheme to decide which bus master is currently the highest priority master requesting the bus. The detail of the priority scheme is not specified and is defined for each application. It is acceptable for the arbiter to use other signals, either \amba~or non-\amba, to influence the priority scheme that is in use.
  The address and control signals are used by the arbiter to route the HWDATA and the HADDR from the granted master to the selected slave as illustrated in Figure     \ref{fig:internorg}.
  
  
@@ -200,11 +202,12 @@ An Example of a master requesting the bus control is shown in Figure \ref{fig:gn
 
 \section{\cshia~Components}
 \label{sec:Components-of-the-Architecture}
-As Section \ref{subsec:integrity} discussed, the main resource to provide integrity are tags. Since \cshia~uses \puf-based keys to generate tags, we called them \puf-Tags, or \ptags~for short. \ptags~are the core of \cshia's design. They will be unique for each instance of \cshia~due to the unclonability property of \pufs. That ensures a one-to-one relationship between programs and instances, providing authenticity. To handle \ptags, three main components are added to conventional embedded system architecture. They are: The \ptag~Memory; the Bus Handler (\handler); and the Security Engine (\seceng). Figure \ref{fig:cshia} shows this design and how components communicate between themselves. 
+As Section \ref{subsec:integrity} discussed, the main resource to provide authentication and integrity are tags. Since \cshia~uses \puf-based keys to generate tags, we called them \puf-Tags, or \ptags~for short. \ptags~are the core of \cshia's design. They will be unique for each instance of \cshia~due to the unclonability property of \pufs. That ensures a one-to-one relationship between programs and instances, providing authenticity. To handle \ptags, three main components are added to conventional embedded system architecture. They are: The \ptag~Memory; the Bus Handler (\handler); and the Security Engine (\seceng). Figure \ref{fig:cshia} shows this design and how components communicate between themselves. 
 
 \ptag~Memory is an external memory and has its own buses. This architectural decision gives freedom to designers that can choose bus width, frequency, address space, etc. Because the processor is not aware of any additional component of \cshia, \handler~intercepts data transfers between processor and memory in order to provide them to \seceng~that generates tags. \handler~can also request data ( on behalf of the processor) to main memory so as form complete memory blocks that are necessary to generate \ptags.
 
-\seceng~has three major sub-components. The main one is the \ptag~Generator (\ptaggen), which uses input data whose length is equal to a memory block concatenated with its address to generate \ptags. The \fuzzy~is only used when the system loses its secret key, for instance, after a power cycle. Thus, when the system is powered on, the \fuzzy~will extract the \puf-based key and provide it to \ptaggen. Finally, we have the \ptag~Memory Management Unit (\pmmu). The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~and also to decode internal addresses of \ptags~to physical addresses of \ptagmem. 
+\seceng~has three major sub-components. The main one is the \ptag~Generator (\ptaggen), which uses input data whose length is equal to a memory block concatenated with its address to generate \ptags. The \fuzzy~is only used when the system loses its secret key, for instance, after a power cycle. Thus, when the system is powered on, the \fuzzy~will extract the \puf-based key and provide it to \ptaggen. Finally, we have the \ptag~Memory Management Unit (\pmmu). The main functions of the \pmmu~are to store and request \ptags~from the \ptagmem~and also to decode internal addresses of \ptags~to physical addresses of \ptagmem. This section explains in detail the \cshia~components that are contributions of this work, providing the signal description, the internal behavior, and the waveforms of all the essential operations.
+
 
 
 %======================================================
@@ -279,7 +282,7 @@ As shown in Figure \ref{fig:cshia} the processor will see the \handler~as the bu
 \begin{itemize}
  \item{\textbf{IDLE}}
  
-The system stays in this state until the processor asserts HBUSSREQ, at this time the \handler~, on behalf of the arbiter, will answer these requests according to one of these scenarios:
+The system stays in this state until the processor asserts HBUSSREQ, at this time the \handler, on behalf of the arbiter, will answer these requests according to one of these scenarios:
  \begin{enumerate}
      \item The \sbuf~contains the address requested by the processor in a \sline~- In this case, the processor can start the transaction in the SERVE LEON state.
      \item The address requested is not in the \sbuf~- In this scenario, the \handler~will get the grant in the READ GRANT state and evaluate if its a read or a write, then assemble a new \sline.
@@ -312,7 +315,7 @@ The system stays in this state until the processor asserts HBUSSREQ, at this tim
   
   \item{\textbf{READ LINE}}
   
-  A new \sline will be loaded from the main memory into the \sbuf to start a transaction after the bus is granted and all the control signals are in place, as described in section \ref{sec:amba2}. The Figure \ref{fig:ublsm} illustrates two different incremental read transfers,  the first  starts on time $2$ indicated by the first HTRANS=NONSEQ, with  halfword size reading positions $0$x$20$ and $0$x$22$, the second transaction starts at time $4$ where a small delay is exemplified to show how the HREADY controls the bus operations, and then three words are transferred to the master.  Once an entire \sline is transferred, the line is sent to \seceng~and the state is set to IDLE again, where the system will halt until the execution is considered secure.
+  A new \sline will be loaded from the main memory into the \sbuf to start a transaction after the bus is granted and all the control signals are in place, as described in Section \ref{sec:amba2}. The Figure \ref{fig:ublsm} illustrates two different incremental read transfers,  the first  starts on time $2$ indicated by the first HTRANS=NONSEQ, with  halfword size reading positions $0$x$20$ and $0$x$22$, the second transaction starts at time $4$ where a small delay is exemplified to show how the HREADY controls the bus operations, and then three words are transferred to the master.  Once an entire \sline is transferred, the line is sent to \seceng~and the state is set to IDLE again, where the system will halt until the execution is considered secure.
   After a power cycle, all the instructions are read and tagged, in this case, the execution is not safe, so the state is set to UNSAFE before going back to IDLE. This process is explained in Section \ref{sec:opmodes}.
 
   
@@ -325,7 +328,7 @@ The system stays in this state until the processor asserts HBUSSREQ, at this tim
   \end{figure}
   
  \item{\textbf{WAIT PTAG WRITE}}
- When a \sline need to be written, first is sent to the \seceng~to calculate the respective \ptag~and store in the \ptagmem, this process can take a different number of cycles depending on the features used in the \seceng~, this process is explained in Section \ref{sec:secengine}. After the \ptag is calculated the line can be written in the state WRITE LINE.
+ When a \sline need to be written, first is sent to the \seceng~to calculate the respective \ptag~and store in the \ptagmem, this process can take a different number of cycles depending on the features used in the \seceng, this process is explained in Section \ref{sec:secengine}. After the \ptag is calculated the line can be written in the state WRITE LINE.
  
  
  \item{\textbf{WRITE LINE}}
@@ -342,7 +345,7 @@ The write process is much similar to the read, as Figure \ref{fig:ahbwrite} show
  On this state all LEON requests read or write are executed, the \handler~~will assert the HGRANT and starting acting like the bus until there is data in the \sbuf. The transfers towards the processor are the same as described before in Figures \ref{fig:ublsm} and \ref{fig:ahbwrite}, when the processor requests any address that is not on the \sbuf, the state is set to IDLE.
  
 \item{\textbf{UNSAFE}}
-After a power cycle all the instructions are read and tagged in a process called enrollment that can take a different number of cycles depending on the features used in the \seceng~, the enrollment is explained in Section \ref{sec:opmodes}. After a \sline is considered secure during the enrollment phase, the state goes to IDLE.
+After a power cycle all the instructions are read and tagged in a process called enrollment that can take a different number of cycles depending on the features used in the \seceng, the enrollment is explained in Section \ref{sec:opmodes}. After a \sline is considered secure during the enrollment phase, the state goes to IDLE.
  
 \end{itemize}
 
@@ -361,7 +364,7 @@ After a power cycle all the instructions are read and tagged in a process called
 \end{figure*}
 
 
-This block is responsible for the security part of \cshia~,  as shown in Figure \ref{fig:sebb} it contains one interface toward the \ptagmem~to read and write \ptags~, one interface towards the \handler~ and also control and debug signals described in Table \ref{table:seports}.  The \seceng~has three main functions, extract the key from the \puf~, generate and validate \ptags~and make the \ptagmem operations transparent to \handler~and the processor.
+This block is responsible for the security part of \cshia,  as shown in Figure \ref{fig:sebb} it contains one interface toward the \ptagmem~to read and write \ptags, one interface towards the \handler~ and also control and debug signals described in Table \ref{table:seports}.  The \seceng~has three main functions, extract the key from the \puf, generate and validate \ptags~and make the \ptagmem operations transparent to \handler~and the processor.
 
 
 
@@ -399,20 +402,20 @@ This block is responsible for the security part of \cshia~,  as shown in Figure 
     \label{fig:sesm}
 \end{figure}
 
-The \seceng~is the core of \cshia~, here all the security features take place. This block has the following features: 
+The \seceng~is the core of \cshia, here all the security features take place. This block has the following features: 
 \begin{enumerate}
     \item Extract the cryptographic key from the SPUF
     \item Create the \ptags~for each \sline
     \item Validate \ptags an inform the \handler~that the execution is secure
     \item Control the \ptagmem~
 \end{enumerate}
-The implementation of \seceng~uses a state machine illustrated in Figure \ref{fig:sesm} to synchronize the internal components so,  the  state machine transactions will be used to explain how \seceng~works. The initial state where IDLE, VALIDATE,CALC PTAG  and WRITE PTAG, after the \cshia~expansion to add a \mt~ two more states were added, WRITE ON TREE and WAIT ON TREE  to cooperate with the  latency of the tree  operations. There are two possible configurations for the \seceng~, with or without a \mt~to provide extra protection and improve the integrity of the system this states are explained bellow. 
+The implementation of \seceng~uses a state machine illustrated in Figure \ref{fig:sesm} to synchronize the internal components so,  the  state machine transactions will be used to explain how \seceng~works. The initial state where IDLE, VALIDATE,CALC PTAG  and WRITE PTAG, after the \cshia~expansion to add a \mt~ two more states were added, WRITE ON TREE and WAIT ON TREE  to cooperate with the  latency of the tree  operations. There are two possible configurations for the \seceng, with or without a \mt~to provide extra protection and improve the integrity of the system this states are explained bellow. 
 
 
 \begin{itemize}
   \item{\textbf{IDLE}}
  
-The \seceng~stays in the IDLE  state until a valid \sline~is sent by the \handler~when the line arrives either is to write or validate a \ptag~, for both cases, the line will be registered, and a \ptag~will be generated so that the next state will be CALC PTAG. 
+The \seceng~stays in the IDLE  state until a valid \sline~is sent by the \handler~when the line arrives either is to write or validate a \ptag, for both cases, the line will be registered, and a \ptag~will be generated so that the next state will be CALC PTAG. 
  
   \item{\textbf{CALC PTAG}}
   After a \sline~is registered in IDLE state, it is used to generate a \ptag, a process that can take many clock cycles. After the \ptag~is ready, the initial controls signal from the \handler~are evaluated, and the state is set to either VALIDATE for a read operation or  WRITE PTAG if this is a write operation.  In the extended \cshia~the next state is set to either WAIT TREE for a read operation or  WRITE ON TREE if this is a write operation. For all possible cases, if the operation was a read, a request is made to the \pmmu~to fetch the previously calculated \ptag~of the equivalent \sline.
@@ -438,7 +441,7 @@ The \seceng~operations described in the previous sections can be better visualiz
 
 
 \begin{itemize}
- \item{\textbf{Validate \ptag~- }} As can be seen in Figure \ref{fig:ptgag_rd_no_mt}  on time $2$ the \handler~sends a  \sline to the \seceng~, the line is registered and the generation of the \ptag~starts, when the ptag\_ready signal is asserted,  the equivalent \ptag~for the \sline~is requested from the \ptagmem~oin time $5$. On time $6$ in one cycle the comparison is made and if the \ptags~match a line\_secure flag is asserted and the \handler can continue to serve the processor.
+ \item{\textbf{Validate \ptag~- }} As can be seen in Figure \ref{fig:ptgag_rd_no_mt}  on time $2$ the \handler~sends a  \sline to the \seceng, the line is registered and the generation of the \ptag~starts, when the ptag\_ready signal is asserted,  the equivalent \ptag~for the \sline~is requested from the \ptagmem~oin time $5$. On time $6$ in one cycle the comparison is made and if the \ptags~match a line\_secure flag is asserted and the \handler can continue to serve the processor.
  
    \begin{figure}[!ht]
     \centering
@@ -493,30 +496,14 @@ The main functions of the \pmmu~are to store and request \ptags~from the \ptagme
 \section{Operation Modes}
 \label{sec:opmodes}
 
+
+The previous Sections presented the \cshia~and \amba~components, now in a functional point of view \cshia~can be split into two phases, enrollment and runtime. The enrollment phase described in Section \ref{subsec:Enrollment-Phase}  is the initial and crucial step ensure that the security features works correctly, the runtime phase is the regular operation, where the code will be executed and protected against attacks as described in Section \ref{subsec:runtimephase}.
+
+
+
 %describe all
-
-
-\subsection{Runtime Phase}
-\label{subsec:runtimephase}
 \def\fenroll{Figure \ref{fig:fuzzy-extractor} \subref{fig:fuzzy-enroll}}
 \def\fregen{Figure \ref{fig:fuzzy-extractor} \subref{fig:fuzzy-regen}}
-After the enrollment phase, \cshia~instances are ready for distribution. Here is how \cshia's components work together. \handler~checks for memory read-write operations of the processor. When it perceives a memory read, it will capture memory words \andor~request memory words to compose a memory block. Then it sends this memory block and its address to \seceng. On its turn, \seceng~uses \pmmu~to bring the corresponding \ptag~of that memory block from \ptagmem, while \ptaggen~computes a \ptag~using the content served by \handler. After that, the \ptag~brought from \ptagmem~and the one computed are compared. If they match, \seceng~knows that neither the \ptag~nor the memory block were tampered with. Otherwise, \seceng~alerts the handler that can isolate the processor or sends a non-maskable interrupt to the processor.
-
-
-For write operations, the process is more straightforward. Once any memory block that reached the processor was verified for integrity and authenticity, \handler~can serve the cache line to \seceng~that uses \ptaggen~to compute a new \ptag~and \pmmu~sends that \ptag~to \ptagmem.  During the product lifetime, the device can be rebooted and turned off and on multiple times. While this will not affect \ptags, which are externally stored in \ptagmem, the secret key has to be recovered every time the system comes back from off-line periods. This recovery procedure of the \fuzzy~is described next.
-
-\subsubsection{Key Regeneration}
-\label{subsubsec:Key-Regenation}
-\begin{figure}[!t]
-    \centering
-    \includegraphics[width=0.7\textwidth]{key-construction}
-%     \includegraphics[scale=0.325]{key-construction}
-    \caption{Key generation on \cshia.}
-    \label{fig:key-construction}
-\end{figure}
-
-During the enrollment, there were eight challenges selected to produce four $r_i$ and four $w_i$ values. These challenges and helper data can be exposed off-chip and stored in \ptag~Memory if the designer chooses to do so. The recovery process of the secret key can be seen in \fregen. After using the challenges and all helper data, the syndromes are recovered. Due to inconsistent nature of \pufs, the fuzzy extractor actually recovers bit-flipped versions $w'_i$ and $r'_i$, what leads to the \bch~decoder receive $r'$ and $s'$. Once bit flips in $r_i$ values are corrected, the \fe~uses all $r_i$ to regenerate the secret key as Figure \ref{fig:key-construction} shows.
-
 \subsection{Enrollment Phase}
 \label{subsec:Enrollment-Phase}
 
@@ -557,7 +544,29 @@ To fully explain \fenroll, the chosen parameters are detailed. First, \cshia~inc
 
 The Enrollment Phase proceeds to tag the memory range the manufacturer\slash{}vendor specified during design. Now that \ptaggen~has a unique key, \seceng~orders \handler~to bring all memory blocks and deliver them to it. \seceng~will use \ptaggen~to generate \ptags.%, however, depending on the solution against replay attacks a designer chooses, \ptaggen~is used differently. 
 
-\mario{Meu comentario anterior nao foi tratado. A introdução melhorou muito, mas os componentes são apresentados sem introdução, e sem uma visão top down para orientar o leitor. Posso assegurar que textos dificeis de ler e compreender irritam a banca.}
+
+\subsection{Runtime Phase}
+\label{subsec:runtimephase}
+
+After the enrollment phase, \cshia~instances are ready for distribution. Here is how \cshia's components work together. \handler~checks for memory read-write operations of the processor. When it perceives a memory read, it will capture memory words \andor~request memory words to compose a memory block. Then it sends this memory block and its address to \seceng. On its turn, \seceng~uses \pmmu~to bring the corresponding \ptag~of that memory block from \ptagmem, while \ptaggen~computes a \ptag~using the content served by \handler. After that, the \ptag~brought from \ptagmem~and the one computed are compared. If they match, \seceng~knows that neither the \ptag~nor the memory block were tampered with. Otherwise, \seceng~alerts the handler that can isolate the processor or sends a non-maskable interrupt to the processor.
+
+
+For write operations, the process is more straightforward. Once any memory block that reached the processor was verified for integrity and authenticity, \handler~can serve the cache line to \seceng~that uses \ptaggen~to compute a new \ptag~and \pmmu~sends that \ptag~to \ptagmem.  During the product lifetime, the device can be rebooted and turned off and on multiple times. While this will not affect \ptags, which are externally stored in \ptagmem, the secret key has to be recovered every time the system comes back from off-line periods. This recovery procedure of the \fuzzy~is described next.
+
+\subsubsection{Key Regeneration}
+\label{subsubsec:Key-Regenation}
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=0.7\textwidth]{key-construction}
+%     \includegraphics[scale=0.325]{key-construction}
+    \caption{Key generation on \cshia.}
+    \label{fig:key-construction}
+\end{figure}
+
+During the enrollment, there were eight challenges selected to produce four $r_i$ and four $w_i$ values. These challenges and helper data can be exposed off-chip and stored in \ptag~Memory if the designer chooses to do so. The recovery process of the secret key can be seen in \fregen. After using the challenges and all helper data, the syndromes are recovered. Due to inconsistent nature of \pufs, the fuzzy extractor actually recovers bit-flipped versions $w'_i$ and $r'_i$, what leads to the \bch~decoder receive $r'$ and $s'$. Once bit flips in $r_i$ values are corrected, the \fe~uses all $r_i$ to regenerate the secret key as Figure \ref{fig:key-construction} shows.
+
+
+\mario{Meu comentario anterior nao foi tratado. A introdução melhorou muito, mas os componentes são apresentados sem introdução, e sem uma visão top down para orientar o leitor. Posso assegurar que textos dificeis de ler e compreender irritam a banca.}\augusto{coloquei introduçoes em todos os lugares faltantes para amenizar esse impacto que voce mencionou. acho que faz mais sentido uma abordagem botton up  visto que o objetivo final é falar dos modos de operação, tentei deixar isso clano na introdução do capitulo  }
 
 % \paragraph{Timestamps Generation}
 % \label{paragraph:Timestamps-Generation}
